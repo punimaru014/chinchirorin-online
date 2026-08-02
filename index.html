@@ -1332,6 +1332,13 @@
       const { playerId, bet } = payload.payload;
       const p = roomPlayers.find(x => x.id === playerId);
       if (p) { p.bet = bet; bettingReady[playerId] = true; updateGameUI(); }
+      if (isHost) broadcastState();
+    });
+
+    channel.on('broadcast', { event: 'START_ROLLING_REQUEST' }, () => {
+      if (isHost && gameState === 'BETTING') {
+        startRollingPhase();
+      }
     });
 
     channel.on('broadcast', { event: 'DICE_ROLLED' }, (payload) => {
@@ -1549,8 +1556,13 @@
 
   async function handleRollAction() {
     if (gameState === 'BETTING') {
-      if (isHost) {
-        startRollingPhase();
+      const isDealer = roomPlayers[dealerIdx]?.id === myId;
+      if (isDealer || isHost) {
+        if (isHost) {
+          startRollingPhase();
+        } else {
+          channel.send({ type: 'broadcast', event: 'START_ROLLING_REQUEST' });
+        }
       }
       return;
     }
@@ -1592,6 +1604,8 @@
       isProcessing = false;
       return;
     }
+
+    diceResult = dice;
 
     const hand = judgeHand(dice);
     currentPlayer.hand = hand;
@@ -1674,6 +1688,7 @@
       gameState = 'BETTING';
       roomPlayers.forEach(p => { p.hand = null; p.rollsLeft = 3; p.isDone = false; });
       bettingReady = {};
+      roomPlayers.forEach(p => { bettingReady[p.id] = false; });
       const children = roomPlayers.filter((_, i) => i !== dealerIdx);
       rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
       rollOrderIndex = 0;
