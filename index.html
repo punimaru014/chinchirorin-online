@@ -227,8 +227,8 @@
       flex-wrap: wrap;
     }
 
-    /* ★★★ インラインスタイル固定・絶対保護SVGダイス ★★★ */
-    svg.die-svg {
+    /* ★★★ ダイス（<img> data URI方式―ダークモード完全回避） ★★★ */
+    img.die-face {
       width: 44px;
       height: 44px;
       flex-shrink: 0;
@@ -236,32 +236,17 @@
       display: inline-block;
       vertical-align: middle;
       border-radius: 8px;
-      forced-color-adjust: none !important;
     }
-    svg.die-svg.mini {
+    img.die-face.mini {
       width: 22px !important;
       height: 22px !important;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
-    /* SVG Dice Colors (Anti-Dark Mode) */
-    svg.die-svg .die-bg {
-      fill: #ffffff !important;
-      stroke: #a8a8a8 !important;
-      stroke-width: 4px !important;
-    }
-    svg.die-svg .dot-black {
-      fill: #111111 !important;
-      stroke: #111111 !important;
-    }
-    svg.die-svg .dot-red {
-      fill: #d60000 !important;
-      stroke: #b00000 !important;
-    }
 
     /* アニメーション */
-    .bowl.rolling svg.die-svg:nth-child(1) { animation: rollSmooth1 0.14s infinite alternate ease-in-out; }
-    .bowl.rolling svg.die-svg:nth-child(2) { animation: rollSmooth2 0.12s infinite alternate ease-in-out; }
-    .bowl.rolling svg.die-svg:nth-child(3) { animation: rollSmooth3 0.15s infinite alternate ease-in-out; }
+    .bowl.rolling img.die-face:nth-child(1) { animation: rollSmooth1 0.14s infinite alternate ease-in-out; }
+    .bowl.rolling img.die-face:nth-child(2) { animation: rollSmooth2 0.12s infinite alternate ease-in-out; }
+    .bowl.rolling img.die-face:nth-child(3) { animation: rollSmooth3 0.15s infinite alternate ease-in-out; }
 
     @keyframes rollSmooth1 {
       0% { transform: translate(-8px, -6px) rotate(-35deg) scale(1.08); }
@@ -646,7 +631,7 @@
       .player-avatar { width: 40px; height: 40px; }
       .game-interactive-zone { flex-direction: column; gap: 12px; padding: 12px 8px; }
       .bowl { width: 145px !important; height: 145px !important; padding: 12px; }
-      svg.die-svg { width: 40px; height: 40px; }
+      img.die-face { width: 40px; height: 40px; }
       .action-panel { width: 100%; }
       .main-action-btn { min-height: 52px !important; font-size: 1rem !important; border-radius: 26px !important; }
       .bet-input-row input { font-size: 18px !important; padding: 10px !important; }
@@ -856,8 +841,10 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ============================================================
-  // ★★★ インラインスタイル固定・絶対保護SVGダイス ★★★
-  // (PC強制ダークモードおよびスマホでの黒目消滅を100%遮断!)
+  // ★★★ <img> data URI方式ダイス ★★★
+  // ブラウザのダークモード色反転を完全に回避するため、
+  // インラインSVGではなく<img src="data:image/svg+xml,...">を使用。
+  // 画像コンテキストではブラウザがSVG内部の色を改変できない。
   // ============================================================
   const DOT_COORDS = {
     1: [[50, 50]],
@@ -868,24 +855,27 @@
     6: [[25, 22], [75, 22], [25, 50], [75, 50], [25, 78], [75, 78]]
   };
 
+  // SVG文字列をdata URI用にエンコード
+  function svgToDataURI(svgStr) {
+    return 'data:image/svg+xml,' + encodeURIComponent(svgStr);
+  }
+
   function createDieSVGHTML(val, isMini = false, styleStr = '') {
     const coords = DOT_COORDS[val] || [];
     let dotsSvg = '';
     
     coords.forEach(([cx, cy]) => {
       const isRed1 = (val === 1 && cx === 50 && cy === 50);
-      const dotClass = isRed1 ? 'dot-red' : 'dot-black';
+      const dotFill = isRed1 ? '#d60000' : '#111111';
+      const dotStroke = isRed1 ? '#b00000' : '#000000';
       const r = isRed1 ? (isMini ? 15 : 17) : (isMini ? 10 : 11);
-      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" class="${dotClass}" />`;
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${dotFill}" stroke="${dotStroke}" stroke-width="1"/>`;
     });
 
-    const cls = isMini ? 'die-svg mini' : 'die-svg';
-    return `
-      <svg class="${cls}" viewBox="0 0 100 100" style="${styleStr}" xmlns="http://www.w3.org/2000/svg">
-        <rect class="die-bg" width="92" height="92" x="4" y="4" rx="16" ry="16" />
-        ${dotsSvg}
-      </svg>
-    `;
+    const rawSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="92" height="92" x="4" y="4" rx="16" ry="16" fill="#ffffff" stroke="#a8a8a8" stroke-width="4"/>${dotsSvg}</svg>`;
+    const dataUri = svgToDataURI(rawSvg);
+    const cls = isMini ? 'die-face mini' : 'die-face';
+    return `<img class="${cls}" src="${dataUri}" alt="dice-${val}" style="${styleStr}">`;
   }
 
   function renderDiceCell() {
@@ -1204,31 +1194,41 @@
   function updatePlayersFromPresence() {
     if (!channel) return;
     const state = channel.presenceState();
-    const newPlayers = [];
+    const presenceIds = [];
+    const presenceMap = {};
     
     for (const [key, presences] of Object.entries(state)) {
       if (presences.length > 0) {
-        const p = presences[0];
-        newPlayers.push({
-          id: key, name: p.name || '名無し', avatar: p.avatar || './assets/avatar_fox.jpg',
-          money: p.money || 10000, bet: p.bet || 1000, hand: p.hand || null,
-          rollsLeft: p.rollsLeft !== undefined ? p.rollsLeft : 3, isDone: p.isDone || false
-        });
+        presenceIds.push(key);
+        presenceMap[key] = presences[0];
       }
     }
 
-    if (!newPlayers.some(p => p.id === myId)) {
-      const existingMe = roomPlayers.find(p => p.id === myId);
-      newPlayers.push({
-        id: myId, name: myName, avatar: selectedAvatarUrl,
-        money: existingMe ? existingMe.money : 10000, bet: existingMe ? existingMe.bet : 1000,
-        hand: existingMe ? existingMe.hand : null, rollsLeft: existingMe ? existingMe.rollsLeft : 3,
-        isDone: existingMe ? existingMe.isDone : false
-      });
+    // 自分がpresenceにいない場合は追加
+    if (!presenceIds.includes(myId)) {
+      presenceIds.push(myId);
+      presenceMap[myId] = { name: myName, avatar: selectedAvatarUrl };
     }
-    
-    const oldMap = {}; roomPlayers.forEach(p => { oldMap[p.id] = p; });
-    roomPlayers = newPlayers.map(p => oldMap[p.id] ? { ...p, money: oldMap[p.id].money, bet: oldMap[p.id].bet, hand: oldMap[p.id].hand, rollsLeft: oldMap[p.id].rollsLeft, isDone: oldMap[p.id].isDone } : p);
+
+    const oldMap = {};
+    roomPlayers.forEach(p => { oldMap[p.id] = p; });
+
+    roomPlayers = presenceIds.map(id => {
+      const pres = presenceMap[id];
+      const old = oldMap[id];
+      // ゲーム中は既存のゲームデータを保持（ポイントリセット防止）
+      if (old && gameState !== 'LOBBY') {
+        return { ...old, name: pres.name || old.name, avatar: pres.avatar || old.avatar };
+      }
+      if (old) {
+        return { ...old, name: pres.name || old.name, avatar: pres.avatar || old.avatar };
+      }
+      // 新規プレイヤー
+      return {
+        id: id, name: pres.name || '名無し', avatar: pres.avatar || './assets/avatar_fox.jpg',
+        money: 10000, bet: 1000, hand: null, rollsLeft: 3, isDone: false
+      };
+    });
 
     isHost = roomPlayers.length > 0 ? roomPlayers[0].id === myId : false;
     updateHostIndicator();
