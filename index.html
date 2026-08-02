@@ -239,9 +239,23 @@
       forced-color-adjust: none !important;
     }
     svg.die-svg.mini {
-      width: 22px;
-      height: 22px;
+      width: 22px !important;
+      height: 22px !important;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+    }
+    /* SVG Dice Colors (Anti-Dark Mode) */
+    svg.die-svg .die-bg {
+      fill: #ffffff !important;
+      stroke: #a8a8a8 !important;
+      stroke-width: 4px !important;
+    }
+    svg.die-svg .dot-black {
+      fill: #111111 !important;
+      stroke: #111111 !important;
+    }
+    svg.die-svg .dot-red {
+      fill: #d60000 !important;
+      stroke: #b00000 !important;
     }
 
     /* アニメーション */
@@ -632,7 +646,7 @@
       .player-avatar { width: 40px; height: 40px; }
       .game-interactive-zone { flex-direction: column; gap: 12px; padding: 12px 8px; }
       .bowl { width: 145px !important; height: 145px !important; padding: 12px; }
-      svg.die-svg { width: 40px !important; height: 40px !important; }
+      svg.die-svg { width: 40px; height: 40px; }
       .action-panel { width: 100%; }
       .main-action-btn { min-height: 52px !important; font-size: 1rem !important; border-radius: 26px !important; }
       .bet-input-row input { font-size: 18px !important; padding: 10px !important; }
@@ -860,16 +874,15 @@
     
     coords.forEach(([cx, cy]) => {
       const isRed1 = (val === 1 && cx === 50 && cy === 50);
-      const dotFill = isRed1 ? '#d60000' : '#111111';
-      const dotStroke = isRed1 ? '#b00000' : '#111111';
+      const dotClass = isRed1 ? 'dot-red' : 'dot-black';
       const r = isRed1 ? (isMini ? 15 : 17) : (isMini ? 10 : 11);
-      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${dotFill}" stroke="${dotStroke}" style="fill: ${dotFill} !important; stroke: ${dotStroke} !important;" />`;
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" class="${dotClass}" />`;
     });
 
     const cls = isMini ? 'die-svg mini' : 'die-svg';
     return `
       <svg class="${cls}" viewBox="0 0 100 100" style="${styleStr}" xmlns="http://www.w3.org/2000/svg">
-        <rect width="92" height="92" x="4" y="4" rx="16" ry="16" fill="#ffffff" stroke="#a8a8a8" stroke-width="4" style="fill: #ffffff !important; stroke: #a8a8a8 !important; stroke-width: 4px !important;" />
+        <rect class="die-bg" width="92" height="92" x="4" y="4" rx="16" ry="16" />
         ${dotsSvg}
       </svg>
     `;
@@ -1562,13 +1575,16 @@
       payload: { playerId: currentPlayer.id, playerName: currentPlayer.name, dice: dice, hand: hand, rollsLeft: currentPlayer.rollsLeft, isDone: currentPlayer.isDone }
     });
 
+    if (currentPlayer.isDone) {
+      rollOrderIndex++;
+    }
+
     isProcessing = false;
     broadcastState();
     updateGameUI();
 
-    if (currentPlayer.isDone) {
-      rollOrderIndex++;
-      if (rollOrderIndex >= rollOrder.length) finishRound();
+    if (currentPlayer.isDone && rollOrderIndex >= rollOrder.length) {
+      finishRound();
     }
   }
 
