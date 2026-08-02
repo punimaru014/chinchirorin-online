@@ -115,7 +115,7 @@
       border: 1px solid #ff5252;
     }
 
-    /* ========== 3カラム配置 (PC標準) ========== */
+    /* ========== 3カラム配置 ========== */
     .columns {
       display: flex;
       gap: 12px;
@@ -227,17 +227,15 @@
       flex-wrap: wrap;
     }
 
-    /* ★★★ 完全SVGダイス描画 (強制ダークモード完全対策 & 目消失対策) ★★★ */
+    /* ★★★ インラインスタイル固定・絶対保護SVGダイス ★★★ */
     svg.die-svg {
       width: 44px;
       height: 44px;
       flex-shrink: 0;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.85));
       display: inline-block;
       vertical-align: middle;
       border-radius: 8px;
-      background: #ffffff !important; /* 強制ライト保護 */
-      color-scheme: light !important;
       forced-color-adjust: none !important;
     }
     svg.die-svg.mini {
@@ -246,7 +244,7 @@
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
 
-    /* アニメーション用 */
+    /* アニメーション */
     .bowl.rolling svg.die-svg:nth-child(1) { animation: rollSmooth1 0.14s infinite alternate ease-in-out; }
     .bowl.rolling svg.die-svg:nth-child(2) { animation: rollSmooth2 0.12s infinite alternate ease-in-out; }
     .bowl.rolling svg.die-svg:nth-child(3) { animation: rollSmooth3 0.15s infinite alternate ease-in-out; }
@@ -621,7 +619,7 @@
     }
 
     /* ========================================================== */
-    /* 📱 スマホ最適化メディアクエリ (〜900px)                    */
+    /* 📱 スマホ最適化メディアクエリ                              */
     /* ========================================================== */
     @media (max-width: 900px) {
       body { padding: 6px; }
@@ -633,7 +631,7 @@
       }
       #left-panel, #right-panel {
         width: 100%;
-        order: 2; /* メインゲームカードを一番上に配置！ */
+        order: 2;
       }
       .game-card {
         order: 1;
@@ -645,12 +643,10 @@
       .game-card h1 { font-size: 1.25rem; }
       .round-display { font-size: 0.72rem; padding: 3px 14px; }
 
-      /* プレイヤーカード */
       .players-list { grid-template-columns: 1fr; gap: 6px; }
       .player-card { padding: 8px 10px; font-size: 0.72rem; }
       .player-avatar { width: 40px; height: 40px; }
 
-      /* どんぶりエリア（スマホでもゆったり広々！） */
       .game-interactive-zone {
         flex-direction: column;
         gap: 12px;
@@ -686,9 +682,7 @@
       .cutin-yaku-name { font-size: 1.8rem; }
       .cutin-multiplier { font-size: 0.9rem; }
 
-      #right-panel .log-container {
-        max-height: 200px;
-      }
+      #right-panel .log-container { max-height: 200px; }
     }
   </style>
 </head>
@@ -723,7 +717,7 @@
     </div>
   </div>
 
-  <!-- 3カラム (スマホではメインゲームカードが最優先) -->
+  <!-- 3カラム -->
   <div class="columns">
 
     <!-- 中央：ゲームカード -->
@@ -890,8 +884,8 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ============================================================
-  // ★★★ インラインSVGによる完全ダイス描画 ★★★
-  // (PC強制ダークモードでも100%真っ白、スマホでも目のドットが超くっきり!)
+  // ★★★ 強制インラインスタイル固定・絶対視認保護SVGダイス ★★★
+  // (PC強制ダークモードおよびスマホでの黒目消滅を100%遮断!)
   // ============================================================
   const DOT_COORDS = {
     1: [[50, 50]],
@@ -908,15 +902,17 @@
     
     coords.forEach(([cx, cy]) => {
       const isRed1 = (val === 1 && cx === 50 && cy === 50);
-      const fill = isRed1 ? '#d60000' : '#000000';
+      const fillStyle = isRed1
+        ? 'fill: #d60000 !important; stroke: #b00000 !important;'
+        : 'fill: #111111 !important; stroke: #111111 !important;';
       const r = isRed1 ? (isMini ? 15 : 17) : (isMini ? 10 : 11);
-      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" />`;
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" style="${fillStyle}" />`;
     });
 
     const cls = isMini ? 'die-svg mini' : 'die-svg';
     return `
       <svg class="${cls}" viewBox="0 0 100 100" style="${styleStr}" xmlns="http://www.w3.org/2000/svg">
-        <rect width="96" height="96" x="2" y="2" rx="16" ry="16" fill="#ffffff" stroke="#bbbbbb" stroke-width="4" />
+        <rect width="92" height="92" x="4" y="4" rx="16" ry="16" style="fill: #ffffff !important; stroke: #a8a8a8 !important; stroke-width: 4px !important;" />
         ${dotsSvg}
       </svg>
     `;
@@ -1225,7 +1221,7 @@
       return;
     }
     if (hand.type === 'shomben') {
-      badge.textContent = '自由！ションベン！';
+      badge.textContent = '🚽 ションベン！';
       badge.classList.add('show');
     } else {
       badge.classList.remove('show');
@@ -1379,7 +1375,7 @@
   }
 
   function getCurrentPlayer() {
-    if (!rollOrder || rollOrderIndex >= rollOrder.length) return null;
+    if (!rollOrder || rollOrder.length === 0 || rollOrderIndex >= rollOrder.length) return null;
     return roomPlayers.find(p => p.id === rollOrder[rollOrderIndex]) || null;
   }
 
@@ -1422,7 +1418,8 @@
     const isDealer = roomPlayers[dealerIdx]?.id === myId;
     
     const children = roomPlayers.filter((_, idx) => idx !== dealerIdx);
-    const allChildrenReady = children.length > 0 && children.every(p => bettingReady[p.id]);
+    // 1人テスト時の対応: 子が0人(1人プレイ) または 子全員が賭け金確定
+    const allChildrenReady = children.length === 0 || children.every(p => bettingReady[p.id] === true);
 
     if (gameState === 'BETTING') {
       betControls.classList.add('hidden');
@@ -1432,7 +1429,7 @@
         if (allChildrenReady) {
           actionBtn.disabled = false;
           actionBtn.textContent = '🚀 VIP対戦スタート！';
-          msgArea.textContent = '🎉 全員賭け金確定！対戦スタートを押してください';
+          msgArea.textContent = children.length === 0 ? '🎉 1人テストモード：スタートを押してください' : '🎉 全員賭け金確定！対戦スタートを押してください';
         } else {
           actionBtn.disabled = true;
           actionBtn.textContent = '⏳ 子の賭け金を待っています...';
@@ -1463,19 +1460,33 @@
     }
   }
 
+  // ★★★ ホストがゲームを開始した時の処理修復 ★★★
   function hostStartGame() {
-    if (!isHost || roomPlayers.length < 2) {
-      alert('2人以上集まってからスタートしてください');
-      return;
-    }
-    roomPlayers.forEach(p => { p.money = 10000; p.hand = null; p.rollsLeft = 3; p.isDone = false; });
-    dealerIdx = 0; roundCount = 1; gameState = 'BETTING'; bettingReady = {};
+    if (!isHost) return;
+    roomPlayers.forEach(p => {
+      p.money = p.money || 10000;
+      p.hand = null;
+      p.rollsLeft = 3;
+      p.isDone = false;
+    });
+    dealerIdx = 0;
+    roundCount = 1;
+    gameState = 'BETTING';
+    bettingReady = {};
     roomPlayers.forEach(p => { bettingReady[p.id] = false; });
-    diceResult = [1, 1, 1]; updateDiceUI(diceResult);
+    diceResult = [1, 1, 1];
+    updateDiceUI(diceResult);
+    
+    // 順番設定の初期化
+    const children = roomPlayers.filter((_, i) => i !== dealerIdx);
+    rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
+    rollOrderIndex = 0;
+
     broadcastState();
     document.getElementById('lobby-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
     updateGameUI();
+    addLog('🎮 ホストがゲームを開始しました！賭け金を確定してください。');
   }
 
   function submitBet() {
@@ -1488,17 +1499,28 @@
     channel.send({ type: 'broadcast', event: 'BET_PLACED', payload: { playerId: myId, bet: val } });
     document.getElementById('bet-controls').classList.add('hidden');
     updateGameUI();
+    addLog(`💰 賭け金を確定しました (${val.toLocaleString()} pt)`);
+  }
+
+  function startRollingPhase() {
+    if (!isHost) return;
+    roomPlayers.forEach(p => { p.rollsLeft = 3; p.isDone = false; p.hand = null; });
+    gameState = 'ROLLING';
+    
+    const children = roomPlayers.filter((_, i) => i !== dealerIdx);
+    rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
+    rollOrderIndex = 0;
+    isProcessing = false;
+
+    broadcastState();
+    updateGameUI();
+    addLog('🎲 対戦フェーズ開始！サイコロを振ってください！');
   }
 
   async function handleRollAction() {
     if (gameState === 'BETTING') {
       if (isHost) {
-        roomPlayers.forEach(p => { p.rollsLeft = 3; p.isDone = false; p.hand = null; });
-        gameState = 'ROLLING';
-        rollOrder = roomPlayers.filter((_, i) => i !== dealerIdx).map(p => p.id).concat(roomPlayers[dealerIdx].id);
-        rollOrderIndex = 0;
-        broadcastState();
-        updateGameUI();
+        startRollingPhase();
       }
       return;
     }
@@ -1569,13 +1591,13 @@
   function finishRound() {
     if (!isHost) return;
 
-    const dealer = roomPlayers[dealerIdx];
+    const dealer = roomPlayers[dealerIdx] || roomPlayers[0];
     const dealerHand = dealer.hand || { type: 'menashi', name: '目なし', multiplier: 1 };
     const results = [];
     const summary = { roundCount, dealer: { name: dealer.name, handName: dealerHand.name }, items: [] };
 
     roomPlayers.forEach((p, idx) => {
-      if (idx === dealerIdx) return;
+      if (idx === dealerIdx && roomPlayers.length > 1) return;
       const childHand = p.hand || { type: 'menashi', name: '目なし', multiplier: 1 };
       const res = judgeResult(childHand, dealerHand);
 
@@ -1601,9 +1623,14 @@
       gameState = 'BETTING';
       roomPlayers.forEach(p => { p.hand = null; p.rollsLeft = 3; p.isDone = false; });
       bettingReady = {};
+      const children = roomPlayers.filter((_, i) => i !== dealerIdx);
+      rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
+      rollOrderIndex = 0;
+
       broadcastState();
       updateGameUI();
-    }, 3000);
+      addLog(`🔄 第 ${roundCount} ラウンド開始！`);
+    }, 3200);
   }
 
   function addResultLogTable(summaryData) {
