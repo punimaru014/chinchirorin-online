@@ -618,70 +618,28 @@
       padding: 1px 6px; font-size: 0.55rem; color: #ffe57f; font-weight: 800;
     }
 
-    /* ========================================================== */
-    /* 📱 スマホ最適化メディアクエリ                              */
-    /* ========================================================== */
+    /* モバイル最適化 */
     @media (max-width: 900px) {
       body { padding: 6px; }
       .main-container { max-width: 100%; gap: 8px; }
-
-      .columns {
-        flex-direction: column;
-        gap: 10px;
-      }
-      #left-panel, #right-panel {
-        width: 100%;
-        order: 2;
-      }
-      .game-card {
-        order: 1;
-        width: 100%;
-        padding: 14px 12px;
-        gap: 10px;
-      }
-
+      .columns { flex-direction: column; gap: 10px; }
+      #left-panel, #right-panel { width: 100%; order: 2; }
+      .game-card { order: 1; width: 100%; padding: 14px 12px; gap: 10px; }
       .game-card h1 { font-size: 1.25rem; }
       .round-display { font-size: 0.72rem; padding: 3px 14px; }
-
       .players-list { grid-template-columns: 1fr; gap: 6px; }
       .player-card { padding: 8px 10px; font-size: 0.72rem; }
       .player-avatar { width: 40px; height: 40px; }
-
-      .game-interactive-zone {
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px 8px;
-      }
-      .bowl {
-        width: 145px !important;
-        height: 145px !important;
-        padding: 12px;
-      }
-      svg.die-svg {
-        width: 40px !important;
-        height: 40px !important;
-      }
-
+      .game-interactive-zone { flex-direction: column; gap: 12px; padding: 12px 8px; }
+      .bowl { width: 145px !important; height: 145px !important; padding: 12px; }
+      svg.die-svg { width: 40px !important; height: 40px !important; }
       .action-panel { width: 100%; }
-      .main-action-btn {
-        min-height: 52px !important;
-        font-size: 1rem !important;
-        border-radius: 26px !important;
-      }
-
-      .bet-input-row input {
-        font-size: 18px !important;
-        padding: 10px !important;
-      }
-
-      .cutin-banner {
-        padding: 16px 20px;
-        gap: 12px;
-      }
+      .main-action-btn { min-height: 52px !important; font-size: 1rem !important; border-radius: 26px !important; }
+      .bet-input-row input { font-size: 18px !important; padding: 10px !important; }
+      .cutin-banner { padding: 16px 20px; gap: 12px; }
       .cutin-avatar { width: 75px; height: 75px; }
       .cutin-yaku-name { font-size: 1.8rem; }
       .cutin-multiplier { font-size: 0.9rem; }
-
       #right-panel .log-container { max-height: 200px; }
     }
   </style>
@@ -770,7 +728,7 @@
           <p style="font-size:0.6rem; color:#888; margin-top:2px;" id="host-indicator">👑 あなたはホストです</p>
           <div id="debug-player-count" class="debug-info">参加者: 0人</div>
         </div>
-        <button class="btn" id="start-game-btn" onclick="hostStartGame()">🎮 全員揃ったら対戦スタート！</button>
+        <button class="btn" id="start-game-btn" onclick="hostStartGame()">🎮 対戦スタート！</button>
       </div>
 
       <!-- 対戦画面 -->
@@ -884,7 +842,7 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ============================================================
-  // ★★★ 強制インラインスタイル固定・絶対視認保護SVGダイス ★★★
+  // ★★★ インラインスタイル固定・絶対保護SVGダイス ★★★
   // (PC強制ダークモードおよびスマホでの黒目消滅を100%遮断!)
   // ============================================================
   const DOT_COORDS = {
@@ -1221,7 +1179,7 @@
       return;
     }
     if (hand.type === 'shomben') {
-      badge.textContent = '🚽 ションベン！';
+      badge.textContent = '自由！ションベン！';
       badge.classList.add('show');
     } else {
       badge.classList.remove('show');
@@ -1309,10 +1267,18 @@
       if (p) { p.bet = bet; bettingReady[playerId] = true; updateGameUI(); }
     });
 
+    channel.on('broadcast', { event: 'DICE_ROLLED' }, (payload) => {
+      if (isHost) {
+        const { playerId, dice } = payload.payload;
+        processRollResult(dice);
+      }
+    });
+
     channel.on('broadcast', { event: 'DICE_RESULT' }, (payload) => {
       const r = payload.payload;
       const p = roomPlayers.find(x => x.id === r.playerId);
       if (p) { p.hand = r.hand; p.rollsLeft = r.rollsLeft; p.isDone = r.isDone; }
+      isProcessing = false; // 非ホスト側もボタン非活性を解除
       updateHandBadge(r.hand);
       updateGameUI();
       addLog(`🎲 ${r.playerName} の結果: ${r.dice.join(', ')} → ${r.hand.name}`);
@@ -1418,7 +1384,6 @@
     const isDealer = roomPlayers[dealerIdx]?.id === myId;
     
     const children = roomPlayers.filter((_, idx) => idx !== dealerIdx);
-    // 1人テスト時の対応: 子が0人(1人プレイ) または 子全員が賭け金確定
     const allChildrenReady = children.length === 0 || children.every(p => bettingReady[p.id] === true);
 
     if (gameState === 'BETTING') {
@@ -1460,7 +1425,6 @@
     }
   }
 
-  // ★★★ ホストがゲームを開始した時の処理修復 ★★★
   function hostStartGame() {
     if (!isHost) return;
     roomPlayers.forEach(p => {
@@ -1477,7 +1441,6 @@
     diceResult = [1, 1, 1];
     updateDiceUI(diceResult);
     
-    // 順番設定の初期化
     const children = roomPlayers.filter((_, i) => i !== dealerIdx);
     rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
     rollOrderIndex = 0;
@@ -1558,7 +1521,10 @@
 
   function processRollResult(dice) {
     const currentPlayer = getCurrentPlayer();
-    if (!currentPlayer) return;
+    if (!currentPlayer) {
+      isProcessing = false;
+      return;
+    }
 
     const hand = judgeHand(dice);
     currentPlayer.hand = hand;
@@ -1588,25 +1554,38 @@
     }
   }
 
+  // ★★★ 精密な倍率・親/子勝敗計算 ★★★
   function finishRound() {
     if (!isHost) return;
 
     const dealer = roomPlayers[dealerIdx] || roomPlayers[0];
-    const dealerHand = dealer.hand || { type: 'menashi', name: '目なし', multiplier: 1 };
+    const dealerHand = dealer.hand || { type: 'menashi', name: '目なし', multiplier: 1, win: false };
     const results = [];
     const summary = { roundCount, dealer: { name: dealer.name, handName: dealerHand.name }, items: [] };
 
-    roomPlayers.forEach((p, idx) => {
-      if (idx === dealerIdx && roomPlayers.length > 1) return;
-      const childHand = p.hand || { type: 'menashi', name: '目なし', multiplier: 1 };
+    // 1人テストプレイ時のフォールバック処理
+    const targets = roomPlayers.length === 1 ? roomPlayers : roomPlayers.filter((_, idx) => idx !== dealerIdx);
+
+    targets.forEach((p) => {
+      const childHand = p.hand || { type: 'menashi', name: '目なし', multiplier: 1, win: false };
       const res = judgeResult(childHand, dealerHand);
 
-      let transfer = p.bet * (childHand.multiplier || 1);
+      let transfer = 0;
+      const isSameHand = (getHandRank(childHand) === getHandRank(dealerHand));
+
       if (res.winner === 'child') {
-        p.money += transfer; dealer.money -= transfer;
+        let mult = childHand.win ? (childHand.multiplier || 1) : 1;
+        if (!isSameHand && dealerHand.type === 'hifumi') mult *= 2; // 親がヒフミなら2倍
+        transfer = p.bet * mult;
+        p.money += transfer;
+        if (roomPlayers.length > 1) dealer.money -= transfer;
         summary.items.push({ playerName: p.name, dealerName: dealer.name, handName: childHand.name, resultType: 'win', transfer });
       } else if (res.winner === 'parent') {
-        p.money -= transfer; dealer.money += transfer;
+        let mult = dealerHand.win ? (dealerHand.multiplier || 1) : 1;
+        if (!isSameHand && childHand.type === 'hifumi') mult *= 2; // 子がヒフミなら2倍
+        transfer = p.bet * mult;
+        p.money -= transfer;
+        if (roomPlayers.length > 1) dealer.money += transfer;
         summary.items.push({ playerName: p.name, dealerName: dealer.name, handName: childHand.name, resultType: 'lose', transfer });
       } else {
         summary.items.push({ playerName: p.name, dealerName: dealer.name, handName: childHand.name, resultType: 'push', transfer: 0 });
