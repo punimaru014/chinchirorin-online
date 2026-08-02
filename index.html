@@ -1229,6 +1229,18 @@
   let channel = null;
   let isHost = false;
 
+  // ポイント所持金のローカル永続化（ブラウザバック・タスクキル・再アクセス対策）
+  function getSavedMoney(roomId) {
+    const key = `chinchiro_money_${roomId || currentRoomId || 'vip777'}_${myId}`;
+    const saved = localStorage.getItem(key);
+    return saved !== null ? parseInt(saved) : 10000;
+  }
+
+  function saveMyMoney(amount, roomId) {
+    const key = `chinchiro_money_${roomId || currentRoomId || 'vip777'}_${myId}`;
+    localStorage.setItem(key, amount);
+  }
+
   let roomPlayers = [];
   let gameState = 'LOBBY';
   let dealerIdx = 0;
@@ -1318,17 +1330,26 @@
     roomPlayers = presenceIds.map(id => {
       const pres = presenceMap[id];
       const old = oldMap[id];
-      // ゲーム中は既存のゲームデータを保持（ポイントリセット防止）
-      if (old && gameState !== 'LOBBY') {
-        return { ...old, name: pres.name || old.name, avatar: pres.avatar || old.avatar };
-      }
+
+      const savedMoney = (id === myId) ? getSavedMoney(currentRoomId) : (pres.money || 10000);
+
       if (old) {
-        return { ...old, name: pres.name || old.name, avatar: pres.avatar || old.avatar };
+        return {
+          ...old,
+          name: pres.name || old.name,
+          avatar: pres.avatar || old.avatar,
+          money: (id === myId) ? savedMoney : old.money
+        };
       }
-      // 新規プレイヤー
       return {
-        id: id, name: pres.name || '名無し', avatar: pres.avatar || './assets/avatar_fox.jpg',
-        money: 10000, bet: 1000, hand: null, rollsLeft: 3, isDone: false
+        id: id,
+        name: pres.name || '名無し',
+        avatar: pres.avatar || './assets/avatar_fox.jpg',
+        money: savedMoney,
+        bet: pres.bet || 1000,
+        hand: null,
+        rollsLeft: 3,
+        isDone: false
       };
     });
 
@@ -1371,7 +1392,11 @@
     channel.on('broadcast', { event: 'SYNC_STATE' }, (payload) => {
       if (!isHost) {
         const s = payload.payload;
-        if (s.roomPlayers) roomPlayers = s.roomPlayers;
+        if (s.roomPlayers) {
+          roomPlayers = s.roomPlayers;
+          const me = roomPlayers.find(p => p.id === myId);
+          if (me) saveMyMoney(me.money);
+        }
         if (s.gameState !== undefined) gameState = s.gameState;
         if (s.dealerIdx !== undefined) dealerIdx = s.dealerIdx;
         if (s.roundCount !== undefined) roundCount = s.roundCount;
@@ -1402,6 +1427,19 @@
     channel.on('broadcast', { event: 'START_ROLLING_REQUEST' }, () => {
       if (isHost && gameState === 'BETTING') {
         startRollingPhase();
+      }
+    });
+
+    channel.on('broadcast', { event: 'RESET_ROOM_REQUEST' }, () => {
+      if (isHost) {
+        executeRoomReset();
+      }
+    });
+
+    channel.on('broadcast', { event: 'ROOM_RESET_EXECUTED' }, () => {
+      if (!isHost) {
+        localStorage.removeItem(`chinchiro_money_${currentRoomId}_${myId}`);
+        addLog('🔄 ルームのポイントとラウンドが初期リセットされました！');
       }
     });
 
@@ -1444,7 +1482,11 @@
         const { results, roundSummaryData } = payload.payload;
         results.forEach(r => {
           const p = roomPlayers.find(x => x.id === r.playerId);
-          if (p) { p.money = r.money; p.hand = r.hand; }
+          if (p) {
+            p.money = r.money;
+            p.hand = r.hand;
+            if (p.id === myId) saveMyMoney(r.money);
+          }
         });
         updateGameUI();
         addResultLogTable(roundSummaryData);
@@ -1453,7 +1495,8 @@
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, money: 10000, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
+        const mySavedMoney = getSavedMoney(currentRoomId);
+        await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, money: mySavedMoney, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
         addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
       }
     });
@@ -1786,6 +1829,9 @@
       results.push({ playerId: p.id, money: p.money, hand: childHand });
     });
 
+    const me = roomPlayers.find(p => p.id === myId);
+    if (me) saveMyMoney(me.money);
+
     addResultLogTable(summary);
     channel.send({ type: 'broadcast', event: 'ROUND_RESULT', payload: { results, roundSummaryData: summary } });
 
@@ -1838,9 +1884,57 @@
     container.prepend(entry);
   }
 
+  // ============================================================
+  // ルーム初期リセット機能
+  // ============================================================
+  function resetRoomState() {
+    if (!confirm('⚠️ 所持金とラウンド数を初期リセットしますか？\n（全員のポイントが 10,000 pt、第1ラウンドに戻ります）')) return;
+
+    localStorage.removeItem(`chinchiro_money_${currentRoomId || 'vip777'}_${myId}`);
+
+    if (isHost) {
+      executeRoomReset();
+    } else {
+      channel.send({ type: 'broadcast', event: 'RESET_ROOM_REQUEST' });
+      addLog('⏳ ホストに初期リセット要求を送信しました...');
+    }
+  }
+
+  function executeRoomReset() {
+    if (!isHost) return;
+    roundCount = 1;
+    dealerIdx = 0;
+    gameState = 'BETTING';
+    diceResult = [1, 1, 1];
+    bettingReady = {};
+    isProcessing = false;
+
+    roomPlayers.forEach(p => {
+      p.money = 10000;
+      p.bet = 1000;
+      p.hand = null;
+      p.rollsLeft = 3;
+      p.isDone = false;
+      bettingReady[p.id] = false;
+    });
+    saveMyMoney(10000);
+
+    const children = roomPlayers.filter((_, i) => i !== dealerIdx);
+    rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
+    rollOrderIndex = 0;
+
+    channel.send({ type: 'broadcast', event: 'ROOM_RESET_EXECUTED' });
+    broadcastState();
+    updateGameUI();
+    updateDiceUI([1, 1, 1]);
+    addLog('🔄 リセットボタンにより、全プレイヤーのポイントとラウンドが初期化されました！');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     renderDiceCell();
     updateDiceUI([1, 1, 1]);
+    const resetBtn = document.getElementById('resetButton');
+    if (resetBtn) resetBtn.addEventListener('click', resetRoomState);
   });
 </script>
 </body>
