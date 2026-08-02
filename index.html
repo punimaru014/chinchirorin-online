@@ -1521,7 +1521,17 @@
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        myJoinedAt = Date.now();
+        const state = channel.presenceState();
+        let maxJoinedAt = 0;
+        for (const key in state) {
+          const presences = state[key];
+          if (presences.length > 0 && presences[0].joinedAt) {
+            maxJoinedAt = Math.max(maxJoinedAt, Number(presences[0].joinedAt));
+          }
+        }
+        // 他端末との時計ズレ(Clock Skew)を防止し、後から入った人が必ず既存プレイヤーより後のタイムスタンプになるよう保証
+        myJoinedAt = Math.max(Date.now(), maxJoinedAt + 1);
+
         const mySavedMoney = getSavedMoney(currentRoomId);
         await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, joinedAt: myJoinedAt, money: mySavedMoney, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
         addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
