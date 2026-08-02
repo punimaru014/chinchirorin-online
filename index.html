@@ -1406,9 +1406,9 @@
     });
 
     channel.on('broadcast', { event: 'DICE_ROLL_START' }, (payload) => {
-      const { playerId } = payload.payload;
+      const { playerId, dice } = payload.payload;
       if (playerId !== myId) {
-        triggerRollAnimation();
+        startLocalRoll(playerId, dice);
       }
     });
 
@@ -1421,6 +1421,13 @@
 
     channel.on('broadcast', { event: 'DICE_RESULT' }, (payload) => {
       const r = payload.payload;
+      if (activeRollInterval) {
+        clearInterval(activeRollInterval);
+        activeRollInterval = null;
+      }
+      const bowlEl = document.getElementById('bowl');
+      if (bowlEl) bowlEl.classList.remove('rolling');
+
       const p = roomPlayers.find(x => x.id === r.playerId);
       if (p) { p.hand = r.hand; p.rollsLeft = r.rollsLeft; p.isDone = r.isDone; }
       diceResult = r.dice;
@@ -1644,21 +1651,33 @@
     addLog('🎲 対戦フェーズ開始！サイコロを振ってください！');
   }
 
-  function triggerRollAnimation(onFinish) {
+  let activeRollInterval = null;
+
+  function startLocalRoll(playerId, dice) {
+    if (activeRollInterval) {
+      clearInterval(activeRollInterval);
+      activeRollInterval = null;
+    }
     initAudio();
     playRollSE();
     const bowlEl = document.getElementById('bowl');
     if (bowlEl) bowlEl.classList.add('rolling');
 
     let count = 0;
-    const interval = setInterval(() => {
+    activeRollInterval = setInterval(() => {
       const temp = [randDice(), randDice(), randDice()];
       updateDiceUI(temp, true);
       count++;
       if (count > 12) {
-        clearInterval(interval);
+        clearInterval(activeRollInterval);
+        activeRollInterval = null;
         if (bowlEl) bowlEl.classList.remove('rolling');
-        if (onFinish) onFinish();
+        diceResult = dice;
+        updateDiceUI(dice, false);
+        
+        if (isHost) {
+          processRollResult(dice);
+        }
       }
     }, 60);
   }
@@ -1680,19 +1699,10 @@
     if (!currentPlayer || currentPlayer.id !== myId || isProcessing) return;
 
     isProcessing = true;
-    channel.send({ type: 'broadcast', event: 'DICE_ROLL_START', payload: { playerId: myId } });
+    const finalDice = [randDice(), randDice(), randDice()].sort((a, b) => a - b);
 
-    triggerRollAnimation(() => {
-      const finalDice = [randDice(), randDice(), randDice()].sort((a, b) => a - b);
-      diceResult = finalDice;
-      updateDiceUI(finalDice, false);
-
-      if (isHost) {
-        processRollResult(finalDice);
-      } else {
-        channel.send({ type: 'broadcast', event: 'DICE_ROLLED', payload: { playerId: myId, dice: finalDice } });
-      }
-    });
+    channel.send({ type: 'broadcast', event: 'DICE_ROLL_START', payload: { playerId: myId, dice: finalDice } });
+    startLocalRoll(myId, finalDice);
   }
 
   function processRollResult(dice) {
