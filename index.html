@@ -1305,18 +1305,7 @@
 
   function randDice() { return Math.floor(Math.random() * 6) + 1; }
 
-  // 各ルームごとの初回参加日時を永続化（最初に入った人が絶対ホスト）
-  function getRoomJoinedAt(roomId) {
-    const key = `chinchiro_joined_at_${roomId || currentRoomId || 'vip777'}_${myId}`;
-    let saved = localStorage.getItem(key);
-    if (!saved) {
-      saved = Date.now().toString();
-      localStorage.setItem(key, saved);
-    }
-    return parseInt(saved);
-  }
-
-  let myJoinedAt = Date.now();
+  let myJoinedAt = 0;
 
   function updatePlayersFromPresence() {
     if (!channel) return;
@@ -1341,7 +1330,7 @@
         id: myId,
         name: myName,
         avatar: selectedAvatarUrl,
-        joinedAt: getRoomJoinedAt(currentRoomId),
+        joinedAt: myJoinedAt || 9999999999999,
         money: getSavedMoney(currentRoomId)
       });
     }
@@ -1532,7 +1521,7 @@
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        myJoinedAt = getRoomJoinedAt(currentRoomId);
+        myJoinedAt = Date.now();
         const mySavedMoney = getSavedMoney(currentRoomId);
         await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, joinedAt: myJoinedAt, money: mySavedMoney, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
         addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
