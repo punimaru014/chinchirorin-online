@@ -63,10 +63,11 @@
     .main-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       width: 100%;
-      max-width: 1350px;
+      max-width: 1440px;
       min-height: 100vh;
+      margin: 0 auto;
       position: relative;
       z-index: 1;
     }
@@ -115,13 +116,14 @@
       border: 1px solid #ff5252;
     }
 
-    /* ========== 3カラム配置 ========== */
+    /* ========== 3カラム配置 (PC最適化 CSS Grid) ========== */
     .columns {
-      display: flex;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: minmax(270px, 310px) minmax(480px, 1fr) minmax(290px, 340px);
+      gap: 14px;
       flex: 1;
       width: 100%;
-      align-items: flex-start;
+      align-items: stretch;
     }
 
     .side-panel {
@@ -129,24 +131,52 @@
       backdrop-filter: blur(18px);
       border: 1.5px solid rgba(212, 175, 55, 0.45);
       border-radius: 16px;
-      padding: 12px 14px;
+      padding: 14px 16px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
     }
-    #left-panel { width: 280px; flex-shrink: 0; }
-    #right-panel { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; }
+    #left-panel {
+      overflow-y: auto;
+      max-height: calc(100vh - 100px);
+    }
+    #right-panel {
+      overflow-y: auto;
+      max-height: calc(100vh - 100px);
+    }
+
+    /* 高級感のあるカスタムスクロールバー */
+    .side-panel::-webkit-scrollbar,
+    .log-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .side-panel::-webkit-scrollbar-track,
+    .log-container::-webkit-scrollbar-track {
+      background: rgba(10, 8, 16, 0.5);
+      border-radius: 3px;
+    }
+    .side-panel::-webkit-scrollbar-thumb,
+    .log-container::-webkit-scrollbar-thumb {
+      background: rgba(212, 175, 55, 0.4);
+      border-radius: 3px;
+    }
+    .side-panel::-webkit-scrollbar-thumb:hover,
+    .log-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 215, 0, 0.7);
+    }
 
     .game-card {
       background: rgba(18, 14, 28, 0.94);
       backdrop-filter: blur(24px);
       border: 2px solid rgba(212, 175, 55, 0.6);
       border-radius: 20px;
-      padding: 16px 20px;
+      padding: 18px 24px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.2);
       text-align: center;
-      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 14px;
       min-width: 0;
       position: relative;
     }
@@ -596,8 +626,8 @@
     .log-badge.push { background: rgba(255,229,127,0.25); color: #ffe57f; }
 
     #right-panel .log-container {
-      flex: 1; min-height: 150px; max-height: 350px; overflow-y: auto;
-      display: flex; flex-direction: column; gap: 4px;
+      flex: 1; min-height: 250px; max-height: calc(100vh - 180px); overflow-y: auto;
+      display: flex; flex-direction: column; gap: 6px;
     }
     .log-entry {
       background: rgba(10, 8, 16, 0.85);
@@ -617,12 +647,23 @@
       padding: 1px 6px; font-size: 0.55rem; color: #ffe57f; font-weight: 800;
     }
 
+    /* 中サイズデスクトップ / ノートPC */
+    @media (max-width: 1180px) and (min-width: 901px) {
+      .columns {
+        grid-template-columns: 260px 1fr 270px;
+        gap: 10px;
+      }
+      .game-card { padding: 14px 16px; }
+      .bowl { width: 155px; height: 155px; }
+      img.die-face { width: 44px; height: 44px; }
+    }
+
     /* モバイル最適化 */
     @media (max-width: 900px) {
       body { padding: 6px; }
       .main-container { max-width: 100%; gap: 8px; }
-      .columns { flex-direction: column; gap: 10px; }
-      #left-panel, #right-panel { width: 100%; order: 2; }
+      .columns { display: flex; flex-direction: column; gap: 10px; }
+      #left-panel, #right-panel { width: 100%; max-height: none; order: 2; }
       .game-card { order: 1; width: 100%; padding: 14px 12px; gap: 10px; }
       .game-card h1 { font-size: 1.25rem; }
       .round-display { font-size: 0.72rem; padding: 3px 14px; }
@@ -639,7 +680,7 @@
       .cutin-avatar { width: 75px; height: 75px; }
       .cutin-yaku-name { font-size: 1.8rem; }
       .cutin-multiplier { font-size: 0.9rem; }
-      #right-panel .log-container { max-height: 200px; }
+      #right-panel .log-container { max-height: 220px; }
     }
   </style>
 </head>
