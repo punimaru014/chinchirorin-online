@@ -860,17 +860,16 @@
     
     coords.forEach(([cx, cy]) => {
       const isRed1 = (val === 1 && cx === 50 && cy === 50);
-      const fillStyle = isRed1
-        ? 'fill: #d60000 !important; stroke: #b00000 !important;'
-        : 'fill: #111111 !important; stroke: #111111 !important;';
+      const dotFill = isRed1 ? '#d60000' : '#111111';
+      const dotStroke = isRed1 ? '#b00000' : '#111111';
       const r = isRed1 ? (isMini ? 15 : 17) : (isMini ? 10 : 11);
-      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" style="${fillStyle}" />`;
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${dotFill}" stroke="${dotStroke}" style="fill: ${dotFill} !important; stroke: ${dotStroke} !important;" />`;
     });
 
     const cls = isMini ? 'die-svg mini' : 'die-svg';
     return `
       <svg class="${cls}" viewBox="0 0 100 100" style="${styleStr}" xmlns="http://www.w3.org/2000/svg">
-        <rect width="92" height="92" x="4" y="4" rx="16" ry="16" style="fill: #ffffff !important; stroke: #a8a8a8 !important; stroke-width: 4px !important;" />
+        <rect width="92" height="92" x="4" y="4" rx="16" ry="16" fill="#ffffff" stroke="#a8a8a8" stroke-width="4" style="fill: #ffffff !important; stroke: #a8a8a8 !important; stroke-width: 4px !important;" />
         ${dotsSvg}
       </svg>
     `;
@@ -1238,11 +1237,19 @@
 
     channel.on('presence', { event: 'sync' }, () => {
       updatePlayersFromPresence();
-      document.getElementById('room-screen').classList.add('hidden');
-      document.getElementById('lobby-screen').classList.remove('hidden');
       document.getElementById('display-room-id').innerText = currentRoomId;
       document.getElementById('connection-status').textContent = '✅ VIP接続完了';
       document.getElementById('leaveRoomBtn').style.display = 'inline-block';
+      // 画面遷移: ゲーム中でなければロビー、ゲーム中ならゲーム画面を表示
+      if (gameState === 'LOBBY') {
+        document.getElementById('room-screen').classList.add('hidden');
+        document.getElementById('lobby-screen').classList.remove('hidden');
+        document.getElementById('game-screen').classList.add('hidden');
+      } else {
+        document.getElementById('room-screen').classList.add('hidden');
+        document.getElementById('lobby-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+      }
       if (isHost && gameState !== 'LOBBY') broadcastState();
     });
 
@@ -1257,6 +1264,15 @@
         if (s.bettingReady) bettingReady = s.bettingReady;
         if (s.rollOrder) rollOrder = s.rollOrder;
         if (s.rollOrderIndex !== undefined) rollOrderIndex = s.rollOrderIndex;
+        // 画面遷移: ゲーム中ならゲーム画面に切り替え
+        if (gameState !== 'LOBBY') {
+          document.getElementById('room-screen').classList.add('hidden');
+          document.getElementById('lobby-screen').classList.add('hidden');
+          document.getElementById('game-screen').classList.remove('hidden');
+        } else {
+          document.getElementById('game-screen').classList.add('hidden');
+          document.getElementById('lobby-screen').classList.remove('hidden');
+        }
         updateGameUI();
       }
     });
@@ -1529,20 +1545,22 @@
     const hand = judgeHand(dice);
     currentPlayer.hand = hand;
 
-    channel.send({
-      type: 'broadcast', event: 'DICE_RESULT',
-      payload: { playerId: currentPlayer.id, playerName: currentPlayer.name, dice: dice, hand: hand, rollsLeft: currentPlayer.rollsLeft, isDone: currentPlayer.isDone }
-    });
-
     addLog(`🎲 ${currentPlayer.name} の出目: ${dice.join(', ')} → ${hand.name}`);
     showCutin(currentPlayer, hand);
 
+    // rollsLeft/isDone を更新してからブロードキャスト（順序修正）
     if (hand.type === 'menashi') {
       currentPlayer.rollsLeft--;
       if (currentPlayer.rollsLeft <= 0) currentPlayer.isDone = true;
     } else {
       currentPlayer.isDone = true;
     }
+
+    // 更新後の正しい値をブロードキャスト
+    channel.send({
+      type: 'broadcast', event: 'DICE_RESULT',
+      payload: { playerId: currentPlayer.id, playerName: currentPlayer.name, dice: dice, hand: hand, rollsLeft: currentPlayer.rollsLeft, isDone: currentPlayer.isDone }
+    });
 
     isProcessing = false;
     broadcastState();
