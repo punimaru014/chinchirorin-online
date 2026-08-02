@@ -1305,48 +1305,60 @@
 
   function randDice() { return Math.floor(Math.random() * 6) + 1; }
 
+  let myJoinedAt = Date.now();
+
   function updatePlayersFromPresence() {
     if (!channel) return;
     const state = channel.presenceState();
-    const presenceIds = [];
-    const presenceMap = {};
     
+    const presenceList = [];
     for (const [key, presences] of Object.entries(state)) {
       if (presences.length > 0) {
-        presenceIds.push(key);
-        presenceMap[key] = presences[0];
+        const p = presences[0];
+        presenceList.push({
+          id: key,
+          name: p.name || '名無し',
+          avatar: p.avatar || './assets/avatar_fox.jpg',
+          joinedAt: p.joinedAt || 0,
+          money: p.money
+        });
       }
     }
 
-    // 自分がpresenceにいない場合は追加
-    if (!presenceIds.includes(myId)) {
-      presenceIds.push(myId);
-      presenceMap[myId] = { name: myName, avatar: selectedAvatarUrl };
+    if (!presenceList.some(p => p.id === myId)) {
+      presenceList.push({
+        id: myId,
+        name: myName,
+        avatar: selectedAvatarUrl,
+        joinedAt: myJoinedAt,
+        money: getSavedMoney(currentRoomId)
+      });
     }
+
+    // ★★★ 全端末でホスト判定が完璧に一致するよう参加時間(joinedAt)順でソート ★★★
+    presenceList.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
 
     const oldMap = {};
     roomPlayers.forEach(p => { oldMap[p.id] = p; });
 
-    roomPlayers = presenceIds.map(id => {
-      const pres = presenceMap[id];
-      const old = oldMap[id];
-
-      const savedMoney = (id === myId) ? getSavedMoney(currentRoomId) : (pres.money || 10000);
+    roomPlayers = presenceList.map(pres => {
+      const old = oldMap[pres.id];
+      const savedMoney = (pres.id === myId) ? getSavedMoney(currentRoomId) : (pres.money || 10000);
 
       if (old) {
         return {
           ...old,
           name: pres.name || old.name,
           avatar: pres.avatar || old.avatar,
-          money: (id === myId) ? savedMoney : old.money
+          money: (pres.id === myId) ? savedMoney : old.money
         };
       }
       return {
-        id: id,
-        name: pres.name || '名無し',
-        avatar: pres.avatar || './assets/avatar_fox.jpg',
+        id: pres.id,
+        name: pres.name,
+        avatar: pres.avatar,
         money: savedMoney,
-        bet: pres.bet || 1000,
+        bet: 1000,
         hand: null,
         rollsLeft: 3,
         isDone: false
@@ -1493,10 +1505,19 @@
       }
     });
 
+    channel.on('broadcast', { event: 'GAME_STARTED' }, () => {
+      gameState = 'BETTING';
+      document.getElementById('room-screen').classList.add('hidden');
+      document.getElementById('lobby-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      updateGameUI();
+      addLog('🎮 ホストがゲームを開始しました！賭け金を確定してください。');
+    });
+
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
         const mySavedMoney = getSavedMoney(currentRoomId);
-        await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, money: mySavedMoney, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
+        await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, joinedAt: myJoinedAt, money: mySavedMoney, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
         addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
       }
     });
@@ -1642,7 +1663,9 @@
     rollOrder = children.map(p => p.id).concat(roomPlayers[dealerIdx]?.id).filter(Boolean);
     rollOrderIndex = 0;
 
+    channel.send({ type: 'broadcast', event: 'GAME_STARTED', payload: { gameState: 'BETTING' } });
     broadcastState();
+
     document.getElementById('lobby-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
     updateGameUI();
