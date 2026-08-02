@@ -33,8 +33,7 @@
     }
 
     html, body {
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
       background: #08070c;
     }
 
@@ -42,20 +41,20 @@
       background: url('./assets/casino_bg.jpg') center/cover no-repeat fixed #08070c;
       color: #f5f5f7;
       font-family: 'Outfit', 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
-      padding: 6px;
+      padding: 8px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       margin: 0;
       position: relative;
     }
 
-    /* VIPカジノ暗幕オーバーレイ & 粒子光彩 */
+    /* VIPカジノ暗幕オーバーレイ */
     body::before {
       content: '';
-      position: absolute;
+      position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at 50% 30%, rgba(12, 10, 20, 0.65) 0%, rgba(5, 4, 10, 0.88) 80%);
+      background: radial-gradient(circle at 50% 30%, rgba(12, 10, 20, 0.7) 0%, rgba(5, 4, 10, 0.92) 85%);
       pointer-events: none;
       z-index: 0;
     }
@@ -64,12 +63,10 @@
     .main-container {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
       width: 100%;
-      max-width: 1400px;
-      height: 100%;
-      max-height: 100vh;
-      overflow: hidden;
+      max-width: 1350px;
+      min-height: 100vh;
       position: relative;
       z-index: 1;
     }
@@ -77,122 +74,115 @@
     /* ========== コントロールバー ========== */
     .control-bar {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       width: 100%;
-      background: rgba(18, 14, 28, 0.88);
+      background: rgba(18, 14, 28, 0.92);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(212, 175, 55, 0.4);
+      border: 1.5px solid rgba(212, 175, 55, 0.45);
       border-radius: 12px;
-      padding: 6px 14px;
+      padding: 8px 16px;
       flex-shrink: 0;
-      min-height: 42px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,215,0,0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.85);
     }
-    .control-bar .left,
-    .control-bar .center,
-    .control-bar .right {
+    .control-bar .left, .control-bar .center, .control-bar .right {
       display: flex;
       gap: 6px;
       align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
     }
-    .control-bar .center { flex: 1; justify-content: center; }
 
     .control-btn {
       background: linear-gradient(145deg, #2a2538, #181524);
       color: #e2d9f3;
       border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 6px;
-      padding: 4px 10px;
+      padding: 6px 12px;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.2s ease;
       white-space: nowrap;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     }
     .control-btn:hover:not(:disabled) {
-      background: linear-gradient(145deg, #3d3550, #252038);
       border-color: #ffd700;
       color: #fff;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
     }
     .control-btn.danger {
       background: linear-gradient(135deg, #8b0000, #4a0000);
       color: #ffcdd2;
       border: 1px solid #ff5252;
     }
-    .control-btn.danger:hover:not(:disabled) {
-      background: linear-gradient(135deg, #b71c1c, #689f38);
-      box-shadow: 0 4px 14px rgba(244, 67, 54, 0.4);
-    }
-    .control-btn.leave-btn {
-      background: linear-gradient(135deg, #5d4037, #3e2723);
-      color: #ffe0b2;
-      border: 1px solid #8d6e63;
-    }
-    .save-status {
-      font-size: 0.65rem;
-      color: #ffd700;
-      font-weight: 900;
-      min-width: 40px;
-      text-align: center;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-    }
 
-    /* ========== 3カラム配置 ========== */
+    /* ========== 3カラム配置 (PC標準) ========== */
     .columns {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       flex: 1;
-      min-height: 0;
-      height: auto;
+      width: 100%;
+      align-items: flex-start;
     }
 
     .side-panel {
-      background: rgba(16, 12, 24, 0.88);
+      background: rgba(16, 12, 24, 0.92);
       backdrop-filter: blur(18px);
       border: 1.5px solid rgba(212, 175, 55, 0.45);
-      border-radius: 14px;
-      padding: 10px 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.85), inset 0 0 15px rgba(212, 175, 55, 0.08);
-      overflow-y: auto;
-      flex-shrink: 0;
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.85);
     }
-    #left-panel { width: 260px; }
-    #right-panel {
-      width: 260px;
-      display: flex;
-      flex-direction: column;
-    }
+    #left-panel { width: 280px; flex-shrink: 0; }
+    #right-panel { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; }
 
     .game-card {
-      background: rgba(18, 14, 28, 0.90);
+      background: rgba(18, 14, 28, 0.94);
       backdrop-filter: blur(24px);
       border: 2px solid rgba(212, 175, 55, 0.6);
-      border-radius: 16px;
-      padding: 10px 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.2), inset 0 0 35px rgba(212, 175, 55, 0.05);
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.2);
       text-align: center;
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 12px;
       min-width: 0;
-      overflow-y: auto;
       position: relative;
     }
 
-    /* ========== ルールパネル ========== */
-    #left-panel .panel-title,
-    #right-panel .panel-title {
+    /* ========== タイトル & ラウンド ========== */
+    .game-card h1 {
       font-family: 'Cinzel', 'Noto Serif JP', serif;
-      font-size: 0.95rem;
+      background: linear-gradient(135deg, #ffffff 0%, #ffd700 35%, #d4af37 60%, #ffab00 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 0;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9));
+    }
+    .round-display {
+      font-family: 'Cinzel', 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: #ffe57f;
+      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(0,0,0,0.6));
+      border: 1.5px solid #ffd700;
+      padding: 4px 18px;
+      border-radius: 20px;
+      display: inline-block;
+      margin: 0 auto;
+      box-shadow: 0 0 14px rgba(255,215,0,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* ========== パネルタイトル ========== */
+    .panel-title {
+      font-family: 'Cinzel', 'Noto Serif JP', serif;
+      font-size: 1rem;
       font-weight: 900;
       letter-spacing: 1.5px;
       background: linear-gradient(135deg, #fff3a0 0%, #ffd700 50%, #aa7c11 100%);
@@ -200,33 +190,28 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       border-bottom: 2px dashed rgba(212,175,55,0.4);
-      padding-bottom: 5px;
-      margin-bottom: 8px;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
       text-align: center;
-      flex-shrink: 0;
-      text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
     }
-
-    #left-panel .rule-desc {
-      font-size: 0.62rem;
+    .rule-desc {
+      font-size: 0.7rem;
       color: #f0ece0;
-      margin-bottom: 8px;
-      line-height: 1.5;
+      margin-bottom: 10px;
+      line-height: 1.6;
       background: rgba(0, 0, 0, 0.5);
-      padding: 6px 8px;
-      border-radius: 6px;
+      padding: 8px 10px;
+      border-radius: 8px;
       border-left: 3px solid #ffd700;
-      flex-shrink: 0;
     }
-
     .yaku-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.62rem;
+      font-size: 0.68rem;
     }
     .yaku-table th, .yaku-table td {
       border: 1px solid rgba(212,175,55,0.3);
-      padding: 4px 5px;
+      padding: 5px 6px;
       text-align: left;
       vertical-align: middle;
     }
@@ -237,176 +222,87 @@
     }
     .dice-cell .dice-group {
       display: flex;
-      gap: 3px;
+      gap: 4px;
       align-items: center;
       flex-wrap: wrap;
     }
-    .dice-cell .dash {
-      color: #ffd700;
-      padding: 0 1px;
-      font-size: 0.65rem;
-      font-weight: bold;
-    }
-    .dice-cell .dice-text {
-      font-size: 0.58rem;
-      color: #ccc;
-      margin-left: 2px;
-    }
 
-    /* ========== サイコロ描画 ========== */
-    .mini-die,
-    .die-real {
-      background-color: transparent !important;
-      background: transparent !important;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' rx='18' fill='%23ffffff' stroke='%23aaaaaa' stroke-width='3'/%3E%3C/svg%3E") !important;
-      background-size: 100% 100% !important;
-      background-repeat: no-repeat !important;
-      color: #000000 !important;
+    /* ★★★ 完全SVGダイス描画 (強制ダークモード完全対策 & 目消失対策) ★★★ */
+    svg.die-svg {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+      display: inline-block;
+      vertical-align: middle;
+      border-radius: 8px;
+      background: #ffffff !important; /* 強制ライト保護 */
       color-scheme: light !important;
       forced-color-adjust: none !important;
-      print-color-adjust: exact !important;
-      filter: none !important;
-      isolation: isolate !important;
-      border: none !important;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.7) !important;
-      flex-shrink: 0;
-      display: inline-grid !important;
-      grid-template-columns: repeat(3, 1fr) !important;
-      grid-template-rows: repeat(3, 1fr) !important;
-      transition: transform 0.1s ease-out;
-      position: relative;
     }
-    .mini-die {
-      width: 19px;
-      height: 19px;
-      padding: 2px;
-    }
-    .mini-die .dot,
-    .die-real .dot {
-      border-radius: 50%;
-      background-color: #000000 !important;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%23000000' stroke='%23000000' stroke-width='1'/%3E%3C/svg%3E") !important;
-      background-size: 100% 100% !important;
-      margin: auto;
-      visibility: hidden;
-      flex-shrink: 0;
-      width: 4px;
-      height: 4px;
-      min-width: 4px;
-      min-height: 4px;
-    }
-    .mini-die .dot.visible,
-    .die-real .dot.visible { visibility: visible !important; }
-    .mini-die .dot.red,
-    .die-real .dot.red {
-      background-color: #d60000 !important;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%23d60000' stroke='%23d60000' stroke-width='1'/%3E%3C/svg%3E") !important;
-      box-shadow: inset 0 0 0 10px #d60000, 0 0 3px rgba(214, 0, 0, 0.8) !important;
+    svg.die-svg.mini {
+      width: 22px;
+      height: 22px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
 
-    /* ゲーム内メインサイコロ */
-    .die-real {
-      border-radius: 8px;
-      padding: 3px;
-      width: 40px;
-      height: 40px;
-      border: 1px solid #a8a8a8 !important;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.85) !important;
+    /* アニメーション用 */
+    .bowl.rolling svg.die-svg:nth-child(1) { animation: rollSmooth1 0.14s infinite alternate ease-in-out; }
+    .bowl.rolling svg.die-svg:nth-child(2) { animation: rollSmooth2 0.12s infinite alternate ease-in-out; }
+    .bowl.rolling svg.die-svg:nth-child(3) { animation: rollSmooth3 0.15s infinite alternate ease-in-out; }
+
+    @keyframes rollSmooth1 {
+      0% { transform: translate(-8px, -6px) rotate(-35deg) scale(1.08); }
+      100% { transform: translate(8px, 6px) rotate(180deg) scale(0.92); }
     }
-    .die-real .dot {
-      width: 6px;
-      height: 6px;
-      min-width: 6px;
-      min-height: 6px;
+    @keyframes rollSmooth2 {
+      0% { transform: translate(6px, -6px) rotate(45deg) scale(0.92); }
+      100% { transform: translate(-6px, 6px) rotate(-150deg) scale(1.1); }
     }
-    .die-real .dot.red {
-      width: 7px;
-      height: 7px;
-      min-width: 7px;
-      min-height: 7px;
+    @keyframes rollSmooth3 {
+      0% { transform: translate(-6px, 8px) rotate(-90deg) scale(1.05); }
+      100% { transform: translate(6px, -8px) rotate(120deg) scale(0.9); }
     }
 
-    /* ========== ゲームタイトル & ラウンド ========== */
-    .game-card h1 {
-      font-family: 'Cinzel', 'Noto Serif JP', serif;
-      background: linear-gradient(135deg, #ffffff 0%, #ffd700 35%, #d4af37 60%, #ffab00 100%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 1.4rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      margin: 0;
-      line-height: 1.2;
-      flex-shrink: 0;
-      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9));
-    }
-    .round-display {
-      font-family: 'Cinzel', 'Outfit', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 900;
-      color: #ffe57f;
-      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(0,0,0,0.6));
-      border: 1.5px solid #ffd700;
-      padding: 3px 16px;
-      border-radius: 20px;
-      display: inline-block;
-      margin: 0 auto 4px;
-      flex-shrink: 0;
-      box-shadow: 0 0 14px rgba(255,215,0,0.3);
-      letter-spacing: 1px;
-    }
-
-    /* ========== 入室＆アバター選択設定ボックス ========== */
+    /* ========== 入室 & アバター設定 ========== */
     .setup-box {
       text-align: left;
-      background: rgba(10, 8, 18, 0.75);
+      background: rgba(10, 8, 18, 0.85);
       border: 1.5px solid rgba(212,175,55,0.45);
-      padding: 12px 14px;
-      border-radius: 12px;
+      padding: 16px 18px;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       box-shadow: inset 0 0 20px rgba(0,0,0,0.7);
     }
     .setup-box label {
-      font-size: 0.68rem;
+      font-size: 0.78rem;
       font-weight: 800;
       color: #ffe885;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
     .setup-box input {
       background: #0b0a12;
       border: 1.5px solid #d4af37;
       color: #fff;
-      padding: 7px 12px;
+      padding: 10px 14px;
       border-radius: 8px;
       font-size: 16px;
       outline: none;
       width: 100%;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
-      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .setup-box input:focus {
-      border-color: #ffd700;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 0 12px rgba(255,215,0,0.5);
-    }
-
-    /* アバター選択グリッド */
     .avatar-picker {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 10px;
       margin: 4px 0;
     }
     .avatar-option {
       border: 2px solid rgba(212,175,55,0.3);
-      border-radius: 10px;
-      padding: 3px;
+      border-radius: 12px;
+      padding: 4px;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.2s ease;
       background: rgba(20, 16, 30, 0.8);
       text-align: center;
       position: relative;
@@ -415,114 +311,79 @@
       width: 100%;
       aspect-ratio: 1/1;
       object-fit: cover;
-      border-radius: 7px;
+      border-radius: 8px;
       display: block;
-    }
-    .avatar-option:hover {
-      transform: translateY(-2px) scale(1.04);
-      border-color: #ffd700;
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
     }
     .avatar-option.selected {
       border-color: #ffd700;
       background: linear-gradient(135deg, rgba(212,175,55,0.4), rgba(30,24,45,0.9));
-      box-shadow: 0 0 16px rgba(255, 215, 0, 0.6), inset 0 0 8px rgba(255,215,0,0.3);
-    }
-    .avatar-option.selected::after {
-      content: '✓';
-      position: absolute;
-      top: -4px; right: -4px;
-      background: #ffd700;
-      color: #111;
-      font-size: 0.6rem;
-      font-weight: 900;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
     }
     .avatar-label {
-      font-size: 0.52rem;
+      font-size: 0.6rem;
       color: #ddd;
-      margin-top: 2px;
+      margin-top: 3px;
       font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    /* ========== プレイヤーカード (アバター画像付き) ========== */
+    /* ========== プレイヤーカード ========== */
     .players-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      margin-bottom: 4px;
+      gap: 8px;
       text-align: left;
-      flex-shrink: 0;
     }
     .player-card {
-      background: rgba(22, 18, 34, 0.88);
-      border: 1.5px solid rgba(212, 175, 55, 0.3);
-      border-radius: 10px;
-      padding: 6px 8px;
+      background: rgba(22, 18, 34, 0.92);
+      border: 1.5px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+      padding: 8px 12px;
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
-      font-size: 0.65rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.5);
-      position: relative;
-      overflow: hidden;
+      font-size: 0.75rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
     }
     .player-avatar {
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      border: 1.5px solid #d4af37;
+      border: 2px solid #ffd700;
       object-fit: cover;
       flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
     }
-    .player-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .player-info { flex: 1; min-width: 0; }
     .player-card.active {
       border-color: #ffd700;
-      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(35,28,52,0.95));
-      box-shadow: 0 0 16px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.25);
-      animation: goldPulse 1.8s infinite alternate ease-in-out;
+      background: linear-gradient(135deg, rgba(212,175,55,0.35), rgba(35,28,52,0.95));
+      box-shadow: 0 0 18px rgba(255, 215, 0, 0.6);
     }
-    @keyframes goldPulse {
-      0% { border-color: #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
-      100% { border-color: #fff3a0; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-    }
-    .player-card.me { border-left: 4px solid #2ed573; }
-    .player-card.dealer { border-color: #ff4757; background: rgba(255,71,87,0.15); }
+    .player-card.me { border-left: 5px solid #2ed573; }
+    .player-card.dealer { border-color: #ff4757; background: rgba(255,71,87,0.18); }
     .player-card.done { opacity: 0.5; filter: grayscale(30%); }
 
     .badge {
-      font-size: 0.5rem;
-      padding: 1px 5px;
-      border-radius: 3px;
+      font-size: 0.58rem;
+      padding: 1px 6px;
+      border-radius: 4px;
       font-weight: 900;
-      letter-spacing: 0.5px;
     }
     .badge-dealer { background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
     .badge-host { background: linear-gradient(135deg, #ffd700, #d4af37); color: #111; }
 
-    /* ========== 金箔漆器どんぶり & アクションエリア ========== */
+    /* ========== どんぶり & 操作エリア ========== */
     .game-interactive-zone {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
       width: 100%;
-      margin: 6px 0;
-      padding: 4px;
+      margin: 10px 0;
+      padding: 8px;
+      background: rgba(10, 8, 16, 0.5);
+      border-radius: 16px;
+      border: 1px solid rgba(212,175,55,0.25);
     }
     .bowl-area {
       display: flex;
@@ -531,33 +392,20 @@
       flex-shrink: 0;
       position: relative;
     }
-
-    /* 豪華漆器どんぶり */
     .bowl {
       background: url('./assets/lacquer_bowl.jpg') center/cover no-repeat #15101f;
       border: 5px solid #ffd700 !important;
       border-radius: 50% !important;
-      width: 145px;
-      height: 145px;
+      width: 155px;
+      height: 155px;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      padding: 12px;
-      gap: 4px;
-      flex-shrink: 0;
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.95), 0 10px 35px rgba(0,0,0,0.9), 0 0 25px rgba(255, 215, 0, 0.4);
+      padding: 14px;
+      gap: 6px;
+      box-shadow: inset 0 0 35px rgba(0,0,0,0.95), 0 10px 35px rgba(0,0,0,0.9), 0 0 25px rgba(255, 215, 0, 0.4);
       position: relative;
-      overflow: hidden;
-      transition: transform 0.2s;
-    }
-    .bowl::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 50%;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
-      pointer-events: none;
     }
 
     .action-panel {
@@ -566,23 +414,23 @@
       flex-direction: column;
       justify-content: center;
       align-items: stretch;
-      gap: 8px;
+      gap: 10px;
       min-width: 0;
     }
 
     .main-action-btn {
       width: 100%;
-      min-height: 50px;
-      font-size: 0.95rem !important;
+      min-height: 54px;
+      font-size: 1.05rem !important;
       font-weight: 900 !important;
-      border-radius: 25px !important;
-      box-shadow: 0 4px 18px rgba(255, 215, 0, 0.5), inset 0 1px 1px rgba(255,255,255,0.7) !important;
+      border-radius: 27px !important;
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.55) !important;
       letter-spacing: 1px;
     }
 
     .bet-input-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
     }
     .bet-input-row input {
@@ -590,68 +438,53 @@
       background: #0b0a12;
       border: 1.5px solid #ffd700;
       color: #fff;
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 16px;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 18px;
       font-weight: 800;
       text-align: center;
     }
     .bet-label {
-      font-size: 0.65rem;
+      font-size: 0.75rem;
       color: #ffe57f;
-      margin-bottom: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
+      margin-bottom: 4px;
+      display: block;
+      text-align: center;
     }
 
     .hand-badge {
       display: none;
       position: absolute;
-      top: -14px;
+      top: -16px;
       left: 50%;
       transform: translateX(-50%);
       font-family: 'Noto Serif JP', serif;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 900;
-      padding: 4px 18px;
+      padding: 4px 20px;
       border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.9), 0 0 15px rgba(255,215,0,0.6);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.9), 0 0 15px rgba(255,215,0,0.6);
       z-index: 5;
       white-space: nowrap;
       background: linear-gradient(135deg, #fff3b0, #ffd700, #aa7c11);
       color: #110e05;
       border: 1px solid #ffe57f;
-      letter-spacing: 1px;
     }
     .hand-badge.show { display: block; animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     @keyframes badgePop {
       0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
       100% { transform: translateX(-50%) scale(1); opacity: 1; }
     }
-    .hand-badge.shomben {
-      background: linear-gradient(135deg, #ff5252, #b71c1c);
-      color: #fff;
-      border-color: #ff8a80;
-      animation: shomben-pulse 0.7s infinite alternate ease-in-out;
-    }
-    @keyframes shomben-pulse {
-      from { transform: translateX(-50%) scale(1); }
-      to { transform: translateX(-50%) scale(1.15); }
-    }
 
     .msg-area {
-      min-height: 22px;
+      min-height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.72rem;
+      font-size: 0.8rem;
       font-weight: 800;
       color: #ffe885;
-      margin-bottom: 2px;
       padding: 0 4px;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
     }
 
     /* ========== メインボタン ========== */
@@ -660,17 +493,15 @@
       background-size: 200% auto;
       color: #110e05;
       border: 1px solid #ffe57f;
-      padding: 8px 16px;
-      font-size: 0.78rem;
+      padding: 10px 18px;
+      font-size: 0.85rem;
       font-weight: 900;
-      border-radius: 20px;
+      border-radius: 22px;
       cursor: pointer;
       width: 100%;
-      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.2s ease;
       box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
       letter-spacing: 1px;
-      position: relative;
-      overflow: hidden;
     }
     .btn:hover:not(:disabled) {
       background-position: right center;
@@ -685,11 +516,11 @@
       box-shadow: none;
     }
 
-    /* ========== 豪華役成立カットインモーダル (ゲーム必殺技風) ========== */
+    /* ========== 豪華役カットイン ========== */
     .cutin-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(8px);
       z-index: 9999;
       display: flex;
@@ -699,169 +530,165 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
-    .cutin-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .cutin-overlay.active { opacity: 1; pointer-events: auto; }
     .cutin-banner {
       width: 100%;
       max-width: 900px;
       background: linear-gradient(90deg, transparent 0%, rgba(20,15,30,0.95) 15%, rgba(255,215,0,0.25) 50%, rgba(20,15,30,0.95) 85%, transparent 100%);
       border-top: 3px solid #ffd700;
       border-bottom: 3px solid #ffd700;
-      padding: 20px 40px;
+      padding: 24px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      box-shadow: 0 0 50px rgba(255,215,0,0.5), inset 0 0 30px rgba(255,215,0,0.3);
+      box-shadow: 0 0 50px rgba(255,215,0,0.5);
       transform: scaleX(0.2);
       transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
-      overflow: hidden;
     }
-    .cutin-overlay.active .cutin-banner {
-      transform: scaleX(1);
-    }
+    .cutin-overlay.active .cutin-banner { transform: scaleX(1); }
     .cutin-avatar {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      border: 3px solid #ffd700;
+      width: 110px; height: 110px;
+      border-radius: 50%; border: 3px solid #ffd700;
       object-fit: cover;
       box-shadow: 0 0 25px rgba(255,215,0,0.8);
-      flex-shrink: 0;
     }
-    .cutin-text-box {
-      flex: 1;
-      text-align: left;
-    }
-    .cutin-player-name {
-      font-size: 1rem;
-      color: #ffe885;
-      font-weight: 800;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    }
+    .cutin-text-box { flex: 1; text-align: left; }
+    .cutin-player-name { font-size: 1.1rem; color: #ffe885; font-weight: 800; }
     .cutin-yaku-name {
       font-family: 'Noto Serif JP', serif;
-      font-size: 2.5rem;
+      font-size: 2.6rem;
       font-weight: 900;
       background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ff9100 100%);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 4px;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9));
       margin: 4px 0;
     }
     .cutin-multiplier {
-      font-size: 1.1rem;
-      color: #fff;
-      font-weight: 900;
+      font-size: 1.1rem; color: #fff; font-weight: 900;
       background: rgba(255,215,0,0.25);
       border: 1px solid #ffd700;
-      padding: 2px 12px;
-      border-radius: 12px;
+      padding: 3px 14px; border-radius: 12px;
       display: inline-block;
     }
 
-    /* 紙吹雪（Confetti）エフェクト用キャンバス */
     #confetti-canvas {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 9998;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 9998;
     }
 
-    /* ========== ログ用結果発表テーブル ========== */
+    /* ========== ログ ========== */
     .log-result-entry {
       background: linear-gradient(135deg, rgba(29, 24, 40, 0.95), rgba(13, 10, 20, 0.98)) !important;
       border: 1.5px solid #ffd700 !important;
       border-left: 4px solid #ffd700 !important;
       border-radius: 8px !important;
-      padding: 6px 8px !important;
-      margin: 4px 0 !important;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.7) !important;
+      padding: 8px 10px !important;
+      margin: 6px 0 !important;
     }
-    .log-result-title {
-      font-size: 0.68rem;
-      font-weight: 900;
-      color: #ffe57f;
-      margin-bottom: 2px;
-    }
-    .log-result-dealer {
-      font-size: 0.58rem;
-      color: #ccc;
-      margin-bottom: 4px;
-    }
-    .log-result-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.58rem;
-    }
-    .log-result-table th, .log-result-table td {
-      padding: 3px 4px;
-      border-bottom: 1px solid rgba(212,175,55,0.2);
-      text-align: left;
-    }
-    .log-result-table th { color: #ffd700; font-size: 0.52rem; }
-    .log-badge { padding: 1px 4px; border-radius: 3px; font-size: 0.5rem; font-weight: bold; }
+    .log-result-title { font-size: 0.75rem; font-weight: 900; color: #ffe57f; margin-bottom: 4px; }
+    .log-result-dealer { font-size: 0.65rem; color: #ccc; margin-bottom: 6px; }
+    .log-result-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
+    .log-result-table th, .log-result-table td { padding: 4px 6px; border-bottom: 1px solid rgba(212,175,55,0.2); text-align: left; }
+    .log-result-table th { color: #ffd700; }
+    .log-badge { padding: 1px 5px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; }
     .log-badge.win { background: rgba(46,213,115,0.25); color: #2ed573; }
     .log-badge.lose { background: rgba(255,71,87,0.25); color: #ff4757; }
     .log-badge.push { background: rgba(255,229,127,0.25); color: #ffe57f; }
 
-    /* ========== ログパネル ========== */
     #right-panel .log-container {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      flex: 1; min-height: 150px; max-height: 350px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 4px;
     }
     .log-entry {
       background: rgba(10, 8, 16, 0.85);
       border: 1px solid rgba(212,175,55,0.2);
       border-left: 3px solid #d4af37;
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 0.58rem;
-      flex-shrink: 0;
-      line-height: 1.4;
+      border-radius: 4px; padding: 6px 10px; font-size: 0.65rem; line-height: 1.4;
     }
-    .log-entry .time { color: #888696; font-size: 0.5rem; margin-right: 4px; }
+    .log-entry .time { color: #888696; font-size: 0.55rem; margin-right: 6px; }
 
     /* 汎用 */
     .hidden { display: none !important; }
-    .status-msg { font-size: 0.6rem; color: #aaa8b8; margin-top: 2px; text-align: center; }
-    .debug-info { font-size: 0.55rem; color: #777585; margin-top: 2px; text-align: center; }
+    .status-msg { font-size: 0.68rem; color: #aaa8b8; margin-top: 4px; text-align: center; }
     .roll-indicator {
       display: inline-block;
-      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(0,0,0,0.5));
-      border: 1px solid #ffd700;
-      border-radius: 10px;
-      padding: 1px 6px;
-      font-size: 0.5rem;
-      color: #ffe57f;
-      margin-left: 4px;
-      font-weight: 800;
+      background: rgba(212,175,55,0.3);
+      border: 1px solid #ffd700; border-radius: 10px;
+      padding: 1px 6px; font-size: 0.55rem; color: #ffe57f; font-weight: 800;
     }
 
-    /* モバイルレスポンシブ (〜900px) */
+    /* ========================================================== */
+    /* 📱 スマホ最適化メディアクエリ (〜900px)                    */
+    /* ========================================================== */
     @media (max-width: 900px) {
-      html, body { overflow-y: auto !important; height: auto !important; min-height: 100vh; }
-      body { padding: 8px 4px; }
-      .main-container { gap: 8px; height: auto !important; }
-      .columns { flex-direction: column; gap: 8px; height: auto !important; }
-      #left-panel, #right-panel { width: 100%; flex-shrink: 0; }
-      #right-panel .log-container { min-height: 80px !important; max-height: 100px !important; }
-      .bowl { width: 110px !important; height: 110px !important; }
-      .die-real { width: 30px !important; height: 30px !important; }
-      .die-real .dot { width: 4px; height: 4px; min-width: 4px; min-height: 4px; }
-      .die-real .dot.red { width: 5px; height: 5px; min-width: 5px; min-height: 5px; }
-      .cutin-banner { padding: 12px 20px; gap: 10px; }
-      .cutin-avatar { width: 70px; height: 70px; }
-      .cutin-yaku-name { font-size: 1.6rem; }
+      body { padding: 6px; }
+      .main-container { max-width: 100%; gap: 8px; }
+
+      .columns {
+        flex-direction: column;
+        gap: 10px;
+      }
+      #left-panel, #right-panel {
+        width: 100%;
+        order: 2; /* メインゲームカードを一番上に配置！ */
+      }
+      .game-card {
+        order: 1;
+        width: 100%;
+        padding: 14px 12px;
+        gap: 10px;
+      }
+
+      .game-card h1 { font-size: 1.25rem; }
+      .round-display { font-size: 0.72rem; padding: 3px 14px; }
+
+      /* プレイヤーカード */
+      .players-list { grid-template-columns: 1fr; gap: 6px; }
+      .player-card { padding: 8px 10px; font-size: 0.72rem; }
+      .player-avatar { width: 40px; height: 40px; }
+
+      /* どんぶりエリア（スマホでもゆったり広々！） */
+      .game-interactive-zone {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 8px;
+      }
+      .bowl {
+        width: 145px !important;
+        height: 145px !important;
+        padding: 12px;
+      }
+      svg.die-svg {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      .action-panel { width: 100%; }
+      .main-action-btn {
+        min-height: 52px !important;
+        font-size: 1rem !important;
+        border-radius: 26px !important;
+      }
+
+      .bet-input-row input {
+        font-size: 18px !important;
+        padding: 10px !important;
+      }
+
+      .cutin-banner {
+        padding: 16px 20px;
+        gap: 12px;
+      }
+      .cutin-avatar { width: 75px; height: 75px; }
+      .cutin-yaku-name { font-size: 1.8rem; }
+      .cutin-multiplier { font-size: 0.9rem; }
+
+      #right-panel .log-container {
+        max-height: 200px;
+      }
     }
   </style>
 </head>
@@ -896,77 +723,17 @@
     </div>
   </div>
 
-  <!-- 3カラム -->
+  <!-- 3カラム (スマホではメインゲームカードが最優先) -->
   <div class="columns">
 
-    <!-- ルールパネル (左) -->
-    <div id="left-panel" class="side-panel">
-      <div class="panel-title">📜 VIP ルール</div>
-      <div class="rule-desc">
-        <strong>親と子で極上の勝負！</strong><br>
-        ✅ 役強さ：ピンゾロ＞アラシ＞シゴロ＞出目(6〜1)＞目なし＞ヒフミ＞ションベン<br>
-        ✅ 同役時は親優先（目なし・負け同点は引き分け）<br>
-        ✅ ヒフミ敗北 → 相手の倍率×2を支払い
-      </div>
-      <table class="yaku-table">
-        <thead>
-          <tr><th>役名</th><th>条件</th><th>倍率</th><th>同役時</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>ピンゾロ</td>
-            <td class="dice-cell" data-dice="1,1,1"></td>
-            <td>5倍勝ち</td>
-            <td>親優先</td>
-          </tr>
-          <tr>
-            <td>アラシ</td>
-            <td class="dice-cell" data-dice="2,2,2,6,6,6" data-type="range"></td>
-            <td>3倍勝ち</td>
-            <td>親優先</td>
-          </tr>
-          <tr>
-            <td>シゴロ</td>
-            <td class="dice-cell" data-dice="4,5,6"></td>
-            <td>2倍勝ち</td>
-            <td>親優先</td>
-          </tr>
-          <tr>
-            <td>出目</td>
-            <td class="dice-cell" data-dice="2,2,5" data-type="example"></td>
-            <td>1倍（数字比較）</td>
-            <td>親優先</td>
-          </tr>
-          <tr>
-            <td>目なし</td>
-            <td class="dice-cell">全てバラバラ</td>
-            <td>1倍（振り直し）</td>
-            <td>親優先</td>
-          </tr>
-          <tr>
-            <td>ヒフミ</td>
-            <td class="dice-cell" data-dice="1,2,3"></td>
-            <td>2倍負け</td>
-            <td>親優先</td>
-          </tr>
-          <tr>
-            <td>ションベン</td>
-            <td class="dice-cell">1%発生</td>
-            <td>1倍負け</td>
-            <td>親優先</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ゲームカード (中央) -->
+    <!-- 中央：ゲームカード -->
     <div class="game-card">
 
       <!-- ログイン & アバター選択画面 -->
       <div id="room-screen">
         <h1>🎲 オンラインチンチロ VIP</h1>
-        <div class="round-display" style="margin-top:2px;">VIP Royal Casino 入室</div>
-        <div class="setup-box">
+        <div class="round-display" style="margin-top:4px;">VIP Royal Casino 入室</div>
+        <div class="setup-box" style="margin-top:10px;">
           <label>👤 あなたのプレイヤー名</label>
           <input type="text" id="my-name" placeholder="名前を入力" value="豪商プレイヤー">
           
@@ -992,7 +759,7 @@
 
           <label>🔑 ルームID</label>
           <input type="text" id="room-id-input" placeholder="例: vip777" value="vip777">
-          <div class="room-actions">
+          <div class="room-actions" style="margin-top:6px;">
             <button class="btn" onclick="joinRoom()">🚪 VIPルームに入る / 作る</button>
           </div>
           <div id="connection-status" class="status-msg">🔌 ルームを入力して「VIPルームに入る」を押してください</div>
@@ -1004,9 +771,9 @@
         <h1>🎲 オンラインチンチロ VIP</h1>
         <div class="round-display">待機ロビー (<span id="display-room-id"></span>)</div>
         <div class="setup-box">
-          <p style="font-size:0.68rem; color:#ffe57f;">👥 参加メンバー:</p>
+          <p style="font-size:0.75rem; color:#ffe57f; font-weight:bold;">👥 参加メンバー:</p>
           <div id="lobby-players-list"></div>
-          <p style="font-size:0.55rem; color:#888; margin-top:1px;" id="host-indicator">👑 あなたはホストです</p>
+          <p style="font-size:0.6rem; color:#888; margin-top:2px;" id="host-indicator">👑 あなたはホストです</p>
           <div id="debug-player-count" class="debug-info">参加者: 0人</div>
         </div>
         <button class="btn" id="start-game-btn" onclick="hostStartGame()">🎮 全員揃ったら対戦スタート！</button>
@@ -1043,7 +810,67 @@
 
     </div>
 
-    <!-- ログパネル (右) -->
+    <!-- 左：ルールパネル -->
+    <div id="left-panel" class="side-panel">
+      <div class="panel-title">📜 VIP ルール</div>
+      <div class="rule-desc">
+        <strong>親と子で極上の勝負！</strong><br>
+        ✅ 役強さ：ピンゾロ＞アラシ＞シゴロ＞出目(6〜1)＞目なし＞ヒフミ＞ションベン<br>
+        ✅ 同役時は親優先（目なし・負け同点は引き分け）<br>
+        ✅ ヒフミ敗北 → 相手の倍率×2を支払い
+      </div>
+      <table class="yaku-table">
+        <thead>
+          <tr><th>役名</th><th>条件</th><th>倍率</th><th>同役時</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ピンゾロ</td>
+            <td class="dice-cell" data-dice="1,1,1"></td>
+            <td>5倍勝ち</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>アラシ</td>
+            <td class="dice-cell" data-dice="2,2,2,6,6,6" data-type="range"></td>
+            <td>3倍勝ち</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>シゴロ</td>
+            <td class="dice-cell" data-dice="4,5,6"></td>
+            <td>2倍勝ち</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>出目</td>
+            <td class="dice-cell" data-dice="2,2,5" data-type="example"></td>
+            <td>1倍（比較）</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>目なし</td>
+            <td class="dice-cell">バラバラ</td>
+            <td>1倍（振り直し）</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>ヒフミ</td>
+            <td class="dice-cell" data-dice="1,2,3"></td>
+            <td>2倍負け</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>ションベン</td>
+            <td class="dice-cell">1%発生</td>
+            <td>1倍負け</td>
+            <td>親優先</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 右：ログパネル -->
     <div id="right-panel" class="side-panel">
       <div class="panel-title">📊 勝負ログ</div>
       <div class="log-container" id="log-container">
@@ -1063,6 +890,59 @@
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ============================================================
+  // ★★★ インラインSVGによる完全ダイス描画 ★★★
+  // (PC強制ダークモードでも100%真っ白、スマホでも目のドットが超くっきり!)
+  // ============================================================
+  const DOT_COORDS = {
+    1: [[50, 50]],
+    2: [[25, 25], [75, 75]],
+    3: [[25, 25], [50, 50], [75, 75]],
+    4: [[25, 25], [75, 25], [25, 75], [75, 75]],
+    5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
+    6: [[25, 22], [75, 22], [25, 50], [75, 50], [25, 78], [75, 78]]
+  };
+
+  function createDieSVGHTML(val, isMini = false, styleStr = '') {
+    const coords = DOT_COORDS[val] || [];
+    let dotsSvg = '';
+    
+    coords.forEach(([cx, cy]) => {
+      const isRed1 = (val === 1 && cx === 50 && cy === 50);
+      const fill = isRed1 ? '#d60000' : '#000000';
+      const r = isRed1 ? (isMini ? 15 : 17) : (isMini ? 10 : 11);
+      dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" />`;
+    });
+
+    const cls = isMini ? 'die-svg mini' : 'die-svg';
+    return `
+      <svg class="${cls}" viewBox="0 0 100 100" style="${styleStr}" xmlns="http://www.w3.org/2000/svg">
+        <rect width="96" height="96" x="2" y="2" rx="16" ry="16" fill="#ffffff" stroke="#bbbbbb" stroke-width="4" />
+        ${dotsSvg}
+      </svg>
+    `;
+  }
+
+  function renderDiceCell() {
+    document.querySelectorAll('.dice-cell[data-dice]').forEach(el => {
+      const values = el.dataset.dice.split(',').map(Number);
+      const type = el.dataset.type || '';
+      const group = document.createElement('span');
+      group.className = 'dice-group';
+
+      if (type === 'range') {
+        values.slice(0, 3).forEach(v => group.innerHTML += createDieSVGHTML(v, true));
+        const dash = document.createElement('span'); dash.style.color = '#ffd700'; dash.style.fontWeight = 'bold'; dash.textContent = '〜';
+        group.appendChild(dash);
+        values.slice(3, 6).forEach(v => group.innerHTML += createDieSVGHTML(v, true));
+      } else {
+        values.forEach(v => group.innerHTML += createDieSVGHTML(v, true));
+      }
+      el.innerHTML = '';
+      el.appendChild(group);
+    });
+  }
+
+  // ============================================================
   // アバター選択
   // ============================================================
   let selectedAvatarUrl = './assets/avatar_fox.jpg';
@@ -1073,18 +953,14 @@
   }
 
   // ============================================================
-  // Web Audio API 物理衝突衝突音 & 豪華SE
+  // SE (Web Audio API)
   // ============================================================
   let audioCtx = null;
   const MASTER_VOLUME = 0.12;
 
   function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 
   function playDiceHitSound(vol = 0.5, pitchRatio = 1.0) {
@@ -1094,14 +970,10 @@
       const bufferSize = Math.floor(audioCtx.sampleRate * 0.025);
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
-      }
-      const noise = audioCtx.createBufferSource();
-      noise.buffer = buffer;
-
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'bandpass';
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+      
+      const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass';
       filter.frequency.setValueAtTime((1700 + Math.random() * 500) * pitchRatio, now);
       filter.Q.setValueAtTime(5.5, now);
 
@@ -1109,24 +981,17 @@
       noiseGain.gain.setValueAtTime(vol * MASTER_VOLUME * 1.8, now);
       noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
 
-      noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(audioCtx.destination);
+      noise.connect(filter); filter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
       noise.start(now);
 
-      const osc = audioCtx.createOscillator();
-      const oscGain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime((780 + Math.random() * 250) * pitchRatio, now);
+      const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime((780 + Math.random() * 250) * pitchRatio, now);
       osc.frequency.exponentialRampToValueAtTime(260, now + 0.035);
-
       oscGain.gain.setValueAtTime(vol * MASTER_VOLUME * 0.9, now);
       oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
 
-      osc.connect(oscGain);
-      oscGain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.035);
+      osc.connect(oscGain); oscGain.connect(audioCtx.destination);
+      osc.start(now); osc.stop(now + 0.035);
     } catch (e) {}
   }
 
@@ -1136,7 +1001,7 @@
       const delay = Math.pow(i / (hits - 1), 1.5) * 580;
       const vol = 1.0 - (i / hits) * 0.55;
       const pitch = 0.85 + Math.random() * 0.35;
-      setTimeout(() => { playDiceHitSound(vol, pitch); }, delay);
+      setTimeout(() => playDiceHitSound(vol, pitch), delay);
     }
   }
 
@@ -1147,73 +1012,26 @@
       freqs.forEach((f, i) => {
         setTimeout(() => {
           const now = audioCtx.currentTime;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, now);
+          const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+          osc.type = 'sine'; osc.frequency.setValueAtTime(f, now);
           gain.gain.setValueAtTime(0.35 * MASTER_VOLUME, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.45);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.45);
         }, i * 90);
       });
     } catch (e) {}
   }
 
-  function playBadSE() {
-    try {
-      initAudio();
-      const freqs = [440, 415.30, 392.00, 349.23];
-      freqs.forEach((f, i) => {
-        setTimeout(() => {
-          const now = audioCtx.currentTime;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(f, now);
-          gain.gain.setValueAtTime(0.3 * MASTER_VOLUME, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.35);
-        }, i * 130);
-      });
-    } catch (e) {}
-  }
-
-  function playShombenSE() {
-    try {
-      initAudio();
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(350, now);
-      osc.frequency.exponentialRampToValueAtTime(100, now + 0.4);
-      gain.gain.setValueAtTime(0.4 * MASTER_VOLUME, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.4);
-    } catch (e) {}
-  }
-
   // ============================================================
-  // 紙吹雪（Confetti）アニメーション
+  // 紙吹雪
   // ============================================================
   const canvas = document.getElementById('confetti-canvas');
   const ctx = canvas.getContext('2d');
   let confettiParticles = [];
   let confettiAnimationId = null;
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
@@ -1240,25 +1058,18 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     let alive = false;
     confettiParticles.forEach(p => {
-      p.y += p.vy;
-      p.x += p.vx;
-      p.rotation += p.vRot;
+      p.y += p.vy; p.x += p.vx; p.rotation += p.vRot;
       if (p.y < canvas.height) alive = true;
-
       ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate((p.rotation * Math.PI) / 180);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.translate(p.x, p.y); ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
       ctx.restore();
     });
-    if (alive) {
-      confettiAnimationId = requestAnimationFrame(animateConfetti);
-    }
+    if (alive) confettiAnimationId = requestAnimationFrame(animateConfetti);
   }
 
   // ============================================================
-  // 豪華役カットイン表示処理
+  // 豪華役カットイン
   // ============================================================
   function showCutin(player, hand) {
     if (!hand || !['pinzoro', 'arashi', 'shigoro', 'hifumi', 'shomben'].includes(hand.type)) return;
@@ -1286,7 +1097,7 @@
       triggerConfetti();
     } else if (hand.type === 'hifumi') {
       yakuEl.textContent = '⚡ ヒフミ...';
-      multEl.textContent = '配当 2 倍支払い（大敗）';
+      multEl.textContent = '配当 2 倍支払い';
     } else if (hand.type === 'shomben') {
       yakuEl.textContent = '🚽 ションベン！';
       multEl.textContent = '即死敗北（1倍支払い）';
@@ -1295,9 +1106,7 @@
     overlay.classList.add('active');
     playGoodSE();
 
-    setTimeout(() => {
-      overlay.classList.remove('active');
-    }, 2200);
+    setTimeout(() => overlay.classList.remove('active'), 2200);
   }
 
   // ============================================================
@@ -1330,16 +1139,13 @@
     if (a === c) return { type: 'normal', name: `${b}の目`, multiplier: 1, win: true, value: b };
 
     let res = { type: 'menashi', name: '目なし', multiplier: 1, win: false, value: 0, canReroll: true };
-    if (Math.random() < 0.01) {
-      res = { type: 'shomben', name: 'ションベン', multiplier: 1, win: false, value: 0 };
-    }
+    if (Math.random() < 0.01) res = { type: 'shomben', name: 'ションベン', multiplier: 1, win: false, value: 0 };
     return res;
   }
 
   function judgeResult(childHand, parentHand) {
     const childRank = getHandRank(childHand);
     const parentRank = getHandRank(parentHand);
-
     if (childRank === parentRank) {
       if (parentHand.win) return { winner: 'parent', message: `${childHand.name}同点！親優先！` };
       return { winner: 'push', message: `${childHand.name}同点（引き分け）` };
@@ -1348,46 +1154,7 @@
   }
 
   // ============================================================
-  // ルールテーブルのミニサイコロ描画
-  // ============================================================
-  const diceMap = { 1:[4], 2:[2,6], 3:[2,4,6], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
-
-  function createMiniDie(v) {
-    const die = document.createElement('span');
-    die.className = 'mini-die';
-    const active = diceMap[v] || [];
-    for (let i = 0; i < 9; i++) {
-      const dot = document.createElement('div');
-      dot.className = 'dot';
-      if (active.includes(i)) dot.classList.add('visible');
-      if (v === 1 && i === 4) dot.classList.add('red');
-      die.appendChild(dot);
-    }
-    return die;
-  }
-
-  function renderDiceCell() {
-    document.querySelectorAll('.dice-cell[data-dice]').forEach(el => {
-      const values = el.dataset.dice.split(',').map(Number);
-      const type = el.dataset.type || '';
-      const group = document.createElement('span');
-      group.className = 'dice-group';
-
-      if (type === 'range') {
-        values.slice(0, 3).forEach(v => group.appendChild(createMiniDie(v)));
-        const dash = document.createElement('span'); dash.className = 'dash'; dash.textContent = '〜';
-        group.appendChild(dash);
-        values.slice(3, 6).forEach(v => group.appendChild(createMiniDie(v)));
-      } else {
-        values.forEach(v => group.appendChild(createMiniDie(v)));
-      }
-      el.innerHTML = '';
-      el.appendChild(group);
-    });
-  }
-
-  // ============================================================
-  // ゲーム状態・同期データ
+  // ゲーム状態 & Presence
   // ============================================================
   function getOrCreatePersistentId() {
     let saved = localStorage.getItem('chinchiro_my_id');
@@ -1445,41 +1212,29 @@
         const ty = (i === 1) ? -3 : 3;
         style = `transform: translate(${tx}px, ${ty}px) rotate(${staticRot}deg); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);`;
       }
-      return createDieHTML(d, style);
+      return createDieSVGHTML(d, false, style);
     }).join('');
-  }
-
-  function createDieHTML(val, inlineStyle = '') {
-    const active = diceMap[val] || [];
-    let dots = '';
-    for (let i = 0; i < 9; i++) {
-      dots += `<div class="dot ${active.includes(i) ? 'visible' : ''} ${val === 1 && i === 4 ? 'red' : ''}"></div>`;
-    }
-    return `<div class="die-real" style="${inlineStyle}">${dots}</div>`;
   }
 
   function updateHandBadge(hand) {
     const badge = document.getElementById('hand-badge');
     if (!badge) return;
     if (!hand) {
-      badge.classList.remove('show', 'shomben');
+      badge.classList.remove('show');
       badge.textContent = '';
       return;
     }
     if (hand.type === 'shomben') {
-      badge.textContent = '🚽 ションベン！';
-      badge.classList.add('show', 'shomben');
+      badge.textContent = '自由！ションベン！';
+      badge.classList.add('show');
     } else {
-      badge.classList.remove('show', 'shomben');
+      badge.classList.remove('show');
       badge.textContent = '';
     }
   }
 
   function randDice() { return Math.floor(Math.random() * 6) + 1; }
 
-  // ============================================================
-  // Presence 同期
-  // ============================================================
   function updatePlayersFromPresence() {
     if (!channel) return;
     const state = channel.presenceState();
@@ -1489,14 +1244,9 @@
       if (presences.length > 0) {
         const p = presences[0];
         newPlayers.push({
-          id: key,
-          name: p.name || '名無し',
-          avatar: p.avatar || './assets/avatar_fox.jpg',
-          money: p.money || 10000,
-          bet: p.bet || 1000,
-          hand: p.hand || null,
-          rollsLeft: p.rollsLeft !== undefined ? p.rollsLeft : 3,
-          isDone: p.isDone || false
+          id: key, name: p.name || '名無し', avatar: p.avatar || './assets/avatar_fox.jpg',
+          money: p.money || 10000, bet: p.bet || 1000, hand: p.hand || null,
+          rollsLeft: p.rollsLeft !== undefined ? p.rollsLeft : 3, isDone: p.isDone || false
         });
       }
     }
@@ -1504,13 +1254,9 @@
     if (!newPlayers.some(p => p.id === myId)) {
       const existingMe = roomPlayers.find(p => p.id === myId);
       newPlayers.push({
-        id: myId,
-        name: myName,
-        avatar: selectedAvatarUrl,
-        money: existingMe ? existingMe.money : 10000,
-        bet: existingMe ? existingMe.bet : 1000,
-        hand: existingMe ? existingMe.hand : null,
-        rollsLeft: existingMe ? existingMe.rollsLeft : 3,
+        id: myId, name: myName, avatar: selectedAvatarUrl,
+        money: existingMe ? existingMe.money : 10000, bet: existingMe ? existingMe.bet : 1000,
+        hand: existingMe ? existingMe.hand : null, rollsLeft: existingMe ? existingMe.rollsLeft : 3,
         isDone: existingMe ? existingMe.isDone : false
       });
     }
@@ -1564,21 +1310,13 @@
     channel.on('broadcast', { event: 'BET_PLACED' }, (payload) => {
       const { playerId, bet } = payload.payload;
       const p = roomPlayers.find(x => x.id === playerId);
-      if (p) {
-        p.bet = bet;
-        bettingReady[playerId] = true;
-        updateGameUI();
-      }
+      if (p) { p.bet = bet; bettingReady[playerId] = true; updateGameUI(); }
     });
 
     channel.on('broadcast', { event: 'DICE_RESULT' }, (payload) => {
       const r = payload.payload;
       const p = roomPlayers.find(x => x.id === r.playerId);
-      if (p) {
-        p.hand = r.hand;
-        p.rollsLeft = r.rollsLeft;
-        p.isDone = r.isDone;
-      }
+      if (p) { p.hand = r.hand; p.rollsLeft = r.rollsLeft; p.isDone = r.isDone; }
       updateHandBadge(r.hand);
       updateGameUI();
       addLog(`🎲 ${r.playerName} の結果: ${r.dice.join(', ')} → ${r.hand.name}`);
@@ -1599,9 +1337,7 @@
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        await channel.track({
-          id: myId, name: myName, avatar: selectedAvatarUrl, money: 10000, bet: 1000, hand: null, rollsLeft: 3, isDone: false
-        });
+        await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, money: 10000, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
         addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
       }
     });
@@ -1634,9 +1370,9 @@
   function updateLobbyUI() {
     const list = document.getElementById('lobby-players-list');
     list.innerHTML = roomPlayers.map(p =>
-      `<div style="display:flex; align-items:center; gap:6px; margin:3px 0;">
-        <img src="${p.avatar || './assets/avatar_fox.jpg'}" style="width:24px; height:24px; border-radius:50%; border:1px solid #ffd700;">
-        <span style="font-weight:bold; font-size:0.65rem;">${escapeHtml(p.name)} ${p.id === myId ? '(あなた)' : ''} ${p.id === roomPlayers[0]?.id ? '👑' : ''}</span>
+      `<div style="display:flex; align-items:center; gap:8px; margin:4px 0;">
+        <img src="${p.avatar || './assets/avatar_fox.jpg'}" style="width:28px; height:28px; border-radius:50%; border:1px solid #ffd700;">
+        <span style="font-weight:bold; font-size:0.75rem;">${escapeHtml(p.name)} ${p.id === myId ? '(あなた)' : ''} ${p.id === roomPlayers[0]?.id ? '👑' : ''}</span>
       </div>`
     ).join('');
     updateHostIndicator();
@@ -1904,6 +1640,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     renderDiceCell();
+    updateDiceUI([1, 1, 1]);
   });
 </script>
 </body>
