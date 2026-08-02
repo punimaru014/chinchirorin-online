@@ -1305,6 +1305,17 @@
 
   function randDice() { return Math.floor(Math.random() * 6) + 1; }
 
+  // 各ルームごとの初回参加日時を永続化（最初に入った人が絶対ホスト）
+  function getRoomJoinedAt(roomId) {
+    const key = `chinchiro_joined_at_${roomId || currentRoomId || 'vip777'}_${myId}`;
+    let saved = localStorage.getItem(key);
+    if (!saved) {
+      saved = Date.now().toString();
+      localStorage.setItem(key, saved);
+    }
+    return parseInt(saved);
+  }
+
   let myJoinedAt = Date.now();
 
   function updatePlayersFromPresence() {
@@ -1319,7 +1330,7 @@
           id: key,
           name: p.name || '名無し',
           avatar: p.avatar || './assets/avatar_fox.jpg',
-          joinedAt: p.joinedAt || 0,
+          joinedAt: p.joinedAt ? Number(p.joinedAt) : 9999999999999,
           money: p.money
         });
       }
@@ -1330,13 +1341,18 @@
         id: myId,
         name: myName,
         avatar: selectedAvatarUrl,
-        joinedAt: myJoinedAt,
+        joinedAt: getRoomJoinedAt(currentRoomId),
         money: getSavedMoney(currentRoomId)
       });
     }
 
-    // ★★★ 全端末でホスト判定が完璧に一致するよう参加時間(joinedAt)順でソート ★★★
-    presenceList.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
+    // ★★★ 最初に入った人が絶対にホストになる昇順ソート (未割り当ては最後尾 9999999999999) ★★★
+    presenceList.sort((a, b) => {
+      const tA = a.joinedAt || 9999999999999;
+      const tB = b.joinedAt || 9999999999999;
+      if (tA !== tB) return tA - tB;
+      return a.id.localeCompare(b.id);
+    });
 
     const oldMap = {};
     roomPlayers.forEach(p => { oldMap[p.id] = p; });
@@ -1516,6 +1532,7 @@
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
+        myJoinedAt = getRoomJoinedAt(currentRoomId);
         const mySavedMoney = getSavedMoney(currentRoomId);
         await channel.track({ id: myId, name: myName, avatar: selectedAvatarUrl, joinedAt: myJoinedAt, money: mySavedMoney, bet: 1000, hand: null, rollsLeft: 3, isDone: false });
         addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
