@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="ja" style="color-scheme: light !important;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light only">
+  <title>オンラインチンチロリン - VIP Royal Casino Edition</title>
+  <!-- Google Fonts: 高級感あふれるフォントの導入 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ========== 強制的にライトモード（ダークモード対策） ========== */
+    :root {
+      color-scheme: light !important;
+      forced-color-adjust: none !important;
+    }
+    html {
+      color-scheme: light !important;
+      forced-color-adjust: none !important;
+    }
+    * {
+      color-scheme: light !important;
+      forced-color-adjust: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #08070c;
+    }
+
+    body {
+      background: url('./assets/casino_bg.jpg') center/cover no-repeat fixed #08070c;
+      color: #f5f5f7;
+      font-family: 'Outfit', 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+      padding: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      position: relative;
+    }
+
+    /* VIPカジノ暗幕オーバーレイ & 粒子光彩 */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 50% 30%, rgba(12, 10, 20, 0.65) 0%, rgba(5, 4, 10, 0.88) 80%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ========== メインコンテナ ========== */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      max-width: 1400px;
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ========== コントロールバー ========== */
+    .control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      background: rgba(18, 14, 28, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      padding: 6px 14px;
+      flex-shrink: 0;
+      min-height: 42px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,215,0,0.2);
+    }
+    .control-bar .left,
+    .control-bar .center,
+    .control-bar .right {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .control-bar .center { flex: 1; justify-content: center; }
+
+    .control-btn {
+      background: linear-gradient(145deg, #2a2538, #181524);
+      color: #e2d9f3;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-weight: 700;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+    .control-btn:hover:not(:disabled) {
+      background: linear-gradient(145deg, #3d3550, #252038);
+      border-color: #ffd700;
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+    .control-btn.danger {
+      background: linear-gradient(135deg, #8b0000, #4a0000);
+      color: #ffcdd2;
+      border: 1px solid #ff5252;
+    }
+    .control-btn.danger:hover:not(:disabled) {
+      background: linear-gradient(135deg, #b71c1c, #689f38);
+      box-shadow: 0 4px 14px rgba(244, 67, 54, 0.4);
+    }
+    .control-btn.leave-btn {
+      background: linear-gradient(135deg, #5d4037, #3e2723);
+      color: #ffe0b2;
+      border: 1px solid #8d6e63;
+    }
+    .save-status {
+      font-size: 0.65rem;
+      color: #ffd700;
+      font-weight: 900;
+      min-width: 40px;
+      text-align: center;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+
+    /* ========== 3カラム配置 ========== */
+    .columns {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+      height: auto;
+    }
+
+    .side-panel {
+      background: rgba(16, 12, 24, 0.88);
+      backdrop-filter: blur(18px);
+      border: 1.5px solid rgba(212, 175, 55, 0.45);
+      border-radius: 14px;
+      padding: 10px 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.85), inset 0 0 15px rgba(212, 175, 55, 0.08);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    #left-panel { width: 260px; }
+    #right-panel {
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-card {
+      background: rgba(18, 14, 28, 0.90);
+      backdrop-filter: blur(24px);
+      border: 2px solid rgba(212, 175, 55, 0.6);
+      border-radius: 16px;
+      padding: 10px 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.2), inset 0 0 35px rgba(212, 175, 55, 0.05);
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* ========== ルールパネル ========== */
+    #left-panel .panel-title,
+    #right-panel .panel-title {
+      font-family: 'Cinzel', 'Noto Serif JP', serif;
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #fff3a0 0%, #ffd700 50%, #aa7c11 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border-bottom: 2px dashed rgba(212,175,55,0.4);
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      text-align: center;
+      flex-shrink: 0;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+    }
+
+    #left-panel .rule-desc {
+      font-size: 0.62rem;
+      color: #f0ece0;
+      margin-bottom: 8px;
+      line-height: 1.5;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 8px;
+      border-radius: 6px;
+      border-left: 3px solid #ffd700;
+      flex-shrink: 0;
+    }
+
+    .yaku-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.62rem;
+    }
+    .yaku-table th, .yaku-table td {
+      border: 1px solid rgba(212,175,55,0.3);
+      padding: 4px 5px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .yaku-table th {
+      background: rgba(212,175,55,0.22);
+      color: #ffe885;
+      font-weight: 800;
+    }
+    .dice-cell .dice-group {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .dice-cell .dash {
+      color: #ffd700;
+      padding: 0 1px;
+      font-size: 0.65rem;
+      font-weight: bold;
+    }
+    .dice-cell .dice-text {
+      font-size: 0.58rem;
+      color: #ccc;
+      margin-left: 2px;
+    }
+
+    /* ========== サイコロ描画 ========== */
+    .mini-die,
+    .die-real {
+      background-color: transparent !important;
+      background: transparent !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' rx='18' fill='%23ffffff' stroke='%23aaaaaa' stroke-width='3'/%3E%3C/svg%3E") !important;
+      background-size: 100% 100% !important;
+      background-repeat: no-repeat !important;
+      color: #000000 !important;
+      color-scheme: light !important;
+      forced-color-adjust: none !important;
+      print-color-adjust: exact !important;
+      filter: none !important;
+      isolation: isolate !important;
+      border: none !important;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.7) !important;
+      flex-shrink: 0;
+      display: inline-grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      grid-template-rows: repeat(3, 1fr) !important;
+      transition: transform 0.1s ease-out;
+      position: relative;
+    }
+    .mini-die {
+      width: 19px;
+      height: 19px;
+      padding: 2px;
+    }
+    .mini-die .dot,
+    .die-real .dot {
+      border-radius: 50%;
+      background-color: #000000 !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%23000000' stroke='%23000000' stroke-width='1'/%3E%3C/svg%3E") !important;
+      background-size: 100% 100% !important;
+      margin: auto;
+      visibility: hidden;
+      flex-shrink: 0;
+      width: 4px;
+      height: 4px;
+      min-width: 4px;
+      min-height: 4px;
+    }
+    .mini-die .dot.visible,
+    .die-real .dot.visible { visibility: visible !important; }
+    .mini-die .dot.red,
+    .die-real .dot.red {
+      background-color: #d60000 !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle cx='5' cy='5' r='5' fill='%23d60000' stroke='%23d60000' stroke-width='1'/%3E%3C/svg%3E") !important;
+      box-shadow: inset 0 0 0 10px #d60000, 0 0 3px rgba(214, 0, 0, 0.8) !important;
+    }
+
+    /* ゲーム内メインサイコロ */
+    .die-real {
+      border-radius: 8px;
+      padding: 3px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #a8a8a8 !important;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.85) !important;
+    }
+    .die-real .dot {
+      width: 6px;
+      height: 6px;
+      min-width: 6px;
+      min-height: 6px;
+    }
+    .die-real .dot.red {
+      width: 7px;
+      height: 7px;
+      min-width: 7px;
+      min-height: 7px;
+    }
+
+    /* ========== ゲームタイトル & ラウンド ========== */
+    .game-card h1 {
+      font-family: 'Cinzel', 'Noto Serif JP', serif;
+      background: linear-gradient(135deg, #ffffff 0%, #ffd700 35%, #d4af37 60%, #ffab00 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 0;
+      line-height: 1.2;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9));
+    }
+    .round-display {
+      font-family: 'Cinzel', 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: #ffe57f;
+      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(0,0,0,0.6));
+      border: 1.5px solid #ffd700;
+      padding: 3px 16px;
+      border-radius: 20px;
+      display: inline-block;
+      margin: 0 auto 4px;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(255,215,0,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* ========== 入室＆アバター選択設定ボックス ========== */
+    .setup-box {
+      text-align: left;
+      background: rgba(10, 8, 18, 0.75);
+      border: 1.5px solid rgba(212,175,55,0.45);
+      padding: 12px 14px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.7);
+    }
+    .setup-box label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #ffe885;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .setup-box input {
+      background: #0b0a12;
+      border: 1.5px solid #d4af37;
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      width: 100%;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .setup-box input:focus {
+      border-color: #ffd700;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 0 12px rgba(255,215,0,0.5);
+    }
+
+    /* アバター選択グリッド */
+    .avatar-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 4px 0;
+    }
+    .avatar-option {
+      border: 2px solid rgba(212,175,55,0.3);
+      border-radius: 10px;
+      padding: 3px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: rgba(20, 16, 30, 0.8);
+      text-align: center;
+      position: relative;
+    }
+    .avatar-option img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 7px;
+      display: block;
+    }
+    .avatar-option:hover {
+      transform: translateY(-2px) scale(1.04);
+      border-color: #ffd700;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    }
+    .avatar-option.selected {
+      border-color: #ffd700;
+      background: linear-gradient(135deg, rgba(212,175,55,0.4), rgba(30,24,45,0.9));
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.6), inset 0 0 8px rgba(255,215,0,0.3);
+    }
+    .avatar-option.selected::after {
+      content: '✓';
+      position: absolute;
+      top: -4px; right: -4px;
+      background: #ffd700;
+      color: #111;
+      font-size: 0.6rem;
+      font-weight: 900;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+    .avatar-label {
+      font-size: 0.52rem;
+      color: #ddd;
+      margin-top: 2px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ========== プレイヤーカード (アバター画像付き) ========== */
+    .players-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 4px;
+      text-align: left;
+      flex-shrink: 0;
+    }
+    .player-card {
+      background: rgba(22, 18, 34, 0.88);
+      border: 1.5px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.65rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .player-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid #d4af37;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+    .player-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .player-card.active {
+      border-color: #ffd700;
+      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(35,28,52,0.95));
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 215, 0, 0.25);
+      animation: goldPulse 1.8s infinite alternate ease-in-out;
+    }
+    @keyframes goldPulse {
+      0% { border-color: #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+      100% { border-color: #fff3a0; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+    }
+    .player-card.me { border-left: 4px solid #2ed573; }
+    .player-card.dealer { border-color: #ff4757; background: rgba(255,71,87,0.15); }
+    .player-card.done { opacity: 0.5; filter: grayscale(30%); }
+
+    .badge {
+      font-size: 0.5rem;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+    .badge-dealer { background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
+    .badge-host { background: linear-gradient(135deg, #ffd700, #d4af37); color: #111; }
+
+    /* ========== 金箔漆器どんぶり & アクションエリア ========== */
+    .game-interactive-zone {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      margin: 6px 0;
+      padding: 4px;
+    }
+    .bowl-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* 豪華漆器どんぶり */
+    .bowl {
+      background: url('./assets/lacquer_bowl.jpg') center/cover no-repeat #15101f;
+      border: 5px solid #ffd700 !important;
+      border-radius: 50% !important;
+      width: 145px;
+      height: 145px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 12px;
+      gap: 4px;
+      flex-shrink: 0;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.95), 0 10px 35px rgba(0,0,0,0.9), 0 0 25px rgba(255, 215, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .bowl::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 50%;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
+
+    .action-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .main-action-btn {
+      width: 100%;
+      min-height: 50px;
+      font-size: 0.95rem !important;
+      font-weight: 900 !important;
+      border-radius: 25px !important;
+      box-shadow: 0 4px 18px rgba(255, 215, 0, 0.5), inset 0 1px 1px rgba(255,255,255,0.7) !important;
+      letter-spacing: 1px;
+    }
+
+    .bet-input-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .bet-input-row input {
+      flex: 1;
+      background: #0b0a12;
+      border: 1.5px solid #ffd700;
+      color: #fff;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .bet-label {
+      font-size: 0.65rem;
+      color: #ffe57f;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .hand-badge {
+      display: none;
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.82rem;
+      font-weight: 900;
+      padding: 4px 18px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.9), 0 0 15px rgba(255,215,0,0.6);
+      z-index: 5;
+      white-space: nowrap;
+      background: linear-gradient(135deg, #fff3b0, #ffd700, #aa7c11);
+      color: #110e05;
+      border: 1px solid #ffe57f;
+      letter-spacing: 1px;
+    }
+    .hand-badge.show { display: block; animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes badgePop {
+      0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+      100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    }
+    .hand-badge.shomben {
+      background: linear-gradient(135deg, #ff5252, #b71c1c);
+      color: #fff;
+      border-color: #ff8a80;
+      animation: shomben-pulse 0.7s infinite alternate ease-in-out;
+    }
+    @keyframes shomben-pulse {
+      from { transform: translateX(-50%) scale(1); }
+      to { transform: translateX(-50%) scale(1.15); }
+    }
+
+    .msg-area {
+      min-height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #ffe885;
+      margin-bottom: 2px;
+      padding: 0 4px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+
+    /* ========== メインボタン ========== */
+    .btn {
+      background: linear-gradient(135deg, #fff3a0 0%, #ffd700 35%, #d4af37 60%, #996515 100%);
+      background-size: 200% auto;
+      color: #110e05;
+      border: 1px solid #ffe57f;
+      padding: 8px 16px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      border-radius: 20px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover:not(:disabled) {
+      background-position: right center;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 22px rgba(255, 215, 0, 0.6);
+    }
+    .btn:disabled {
+      background: linear-gradient(135deg, #2c2838, #181522);
+      border-color: rgba(212,175,55,0.15);
+      color: #666472;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ========== 豪華役成立カットインモーダル (ゲーム必殺技風) ========== */
+    .cutin-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .cutin-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .cutin-banner {
+      width: 100%;
+      max-width: 900px;
+      background: linear-gradient(90deg, transparent 0%, rgba(20,15,30,0.95) 15%, rgba(255,215,0,0.25) 50%, rgba(20,15,30,0.95) 85%, transparent 100%);
+      border-top: 3px solid #ffd700;
+      border-bottom: 3px solid #ffd700;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 0 50px rgba(255,215,0,0.5), inset 0 0 30px rgba(255,215,0,0.3);
+      transform: scaleX(0.2);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+    .cutin-overlay.active .cutin-banner {
+      transform: scaleX(1);
+    }
+    .cutin-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid #ffd700;
+      object-fit: cover;
+      box-shadow: 0 0 25px rgba(255,215,0,0.8);
+      flex-shrink: 0;
+    }
+    .cutin-text-box {
+      flex: 1;
+      text-align: left;
+    }
+    .cutin-player-name {
+      font-size: 1rem;
+      color: #ffe885;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    .cutin-yaku-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ff9100 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 4px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9));
+      margin: 4px 0;
+    }
+    .cutin-multiplier {
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 900;
+      background: rgba(255,215,0,0.25);
+      border: 1px solid #ffd700;
+      padding: 2px 12px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    /* 紙吹雪（Confetti）エフェクト用キャンバス */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ========== ログ用結果発表テーブル ========== */
+    .log-result-entry {
+      background: linear-gradient(135deg, rgba(29, 24, 40, 0.95), rgba(13, 10, 20, 0.98)) !important;
+      border: 1.5px solid #ffd700 !important;
+      border-left: 4px solid #ffd700 !important;
+      border-radius: 8px !important;
+      padding: 6px 8px !important;
+      margin: 4px 0 !important;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.7) !important;
+    }
+    .log-result-title {
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: #ffe57f;
+      margin-bottom: 2px;
+    }
+    .log-result-dealer {
+      font-size: 0.58rem;
+      color: #ccc;
+      margin-bottom: 4px;
+    }
+    .log-result-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.58rem;
+    }
+    .log-result-table th, .log-result-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid rgba(212,175,55,0.2);
+      text-align: left;
+    }
+    .log-result-table th { color: #ffd700; font-size: 0.52rem; }
+    .log-badge { padding: 1px 4px; border-radius: 3px; font-size: 0.5rem; font-weight: bold; }
+    .log-badge.win { background: rgba(46,213,115,0.25); color: #2ed573; }
+    .log-badge.lose { background: rgba(255,71,87,0.25); color: #ff4757; }
+    .log-badge.push { background: rgba(255,229,127,0.25); color: #ffe57f; }
+
+    /* ========== ログパネル ========== */
+    #right-panel .log-container {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .log-entry {
+      background: rgba(10, 8, 16, 0.85);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-left: 3px solid #d4af37;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.58rem;
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+    .log-entry .time { color: #888696; font-size: 0.5rem; margin-right: 4px; }
+
+    /* 汎用 */
+    .hidden { display: none !important; }
+    .status-msg { font-size: 0.6rem; color: #aaa8b8; margin-top: 2px; text-align: center; }
+    .debug-info { font-size: 0.55rem; color: #777585; margin-top: 2px; text-align: center; }
+    .roll-indicator {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(0,0,0,0.5));
+      border: 1px solid #ffd700;
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 0.5rem;
+      color: #ffe57f;
+      margin-left: 4px;
+      font-weight: 800;
+    }
+
+    /* モバイルレスポンシブ (〜900px) */
+    @media (max-width: 900px) {
+      html, body { overflow-y: auto !important; height: auto !important; min-height: 100vh; }
+      body { padding: 8px 4px; }
+      .main-container { gap: 8px; height: auto !important; }
+      .columns { flex-direction: column; gap: 8px; height: auto !important; }
+      #left-panel, #right-panel { width: 100%; flex-shrink: 0; }
+      #right-panel .log-container { min-height: 80px !important; max-height: 100px !important; }
+      .bowl { width: 110px !important; height: 110px !important; }
+      .die-real { width: 30px !important; height: 30px !important; }
+      .die-real .dot { width: 4px; height: 4px; min-width: 4px; min-height: 4px; }
+      .die-real .dot.red { width: 5px; height: 5px; min-width: 5px; min-height: 5px; }
+      .cutin-banner { padding: 12px 20px; gap: 10px; }
+      .cutin-avatar { width: 70px; height: 70px; }
+      .cutin-yaku-name { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- 豪華役成立カットインモーダル -->
+<div class="cutin-overlay" id="cutin-overlay">
+  <div class="cutin-banner" id="cutin-banner">
+    <img src="./assets/avatar_fox.jpg" class="cutin-avatar" id="cutin-avatar" alt="Avatar">
+    <div class="cutin-text-box">
+      <div class="cutin-player-name" id="cutin-player-name">プレイヤー名</div>
+      <div class="cutin-yaku-name" id="cutin-yaku-name">ピンゾロ</div>
+      <div class="cutin-multiplier" id="cutin-multiplier">配当 5 倍勝ち</div>
+    </div>
+  </div>
+</div>
+
+<div class="main-container">
+
+  <!-- コントロールバー -->
+  <div class="control-bar">
+    <div class="left">
+      <button class="control-btn leave-btn" id="leaveRoomBtn" style="display:none;">🚪 退出</button>
+    </div>
+    <div class="center">
+      <span class="save-status" id="saveStatus"></span>
+    </div>
+    <div class="right">
+      <button class="control-btn danger" id="resetButton">🔄 リセット</button>
+    </div>
+  </div>
+
+  <!-- 3カラム -->
+  <div class="columns">
+
+    <!-- ルールパネル (左) -->
+    <div id="left-panel" class="side-panel">
+      <div class="panel-title">📜 VIP ルール</div>
+      <div class="rule-desc">
+        <strong>親と子で極上の勝負！</strong><br>
+        ✅ 役強さ：ピンゾロ＞アラシ＞シゴロ＞出目(6〜1)＞目なし＞ヒフミ＞ションベン<br>
+        ✅ 同役時は親優先（目なし・負け同点は引き分け）<br>
+        ✅ ヒフミ敗北 → 相手の倍率×2を支払い
+      </div>
+      <table class="yaku-table">
+        <thead>
+          <tr><th>役名</th><th>条件</th><th>倍率</th><th>同役時</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ピンゾロ</td>
+            <td class="dice-cell" data-dice="1,1,1"></td>
+            <td>5倍勝ち</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>アラシ</td>
+            <td class="dice-cell" data-dice="2,2,2,6,6,6" data-type="range"></td>
+            <td>3倍勝ち</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>シゴロ</td>
+            <td class="dice-cell" data-dice="4,5,6"></td>
+            <td>2倍勝ち</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>出目</td>
+            <td class="dice-cell" data-dice="2,2,5" data-type="example"></td>
+            <td>1倍（数字比較）</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>目なし</td>
+            <td class="dice-cell">全てバラバラ</td>
+            <td>1倍（振り直し）</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>ヒフミ</td>
+            <td class="dice-cell" data-dice="1,2,3"></td>
+            <td>2倍負け</td>
+            <td>親優先</td>
+          </tr>
+          <tr>
+            <td>ションベン</td>
+            <td class="dice-cell">1%発生</td>
+            <td>1倍負け</td>
+            <td>親優先</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ゲームカード (中央) -->
+    <div class="game-card">
+
+      <!-- ログイン & アバター選択画面 -->
+      <div id="room-screen">
+        <h1>🎲 オンラインチンチロ VIP</h1>
+        <div class="round-display" style="margin-top:2px;">VIP Royal Casino 入室</div>
+        <div class="setup-box">
+          <label>👤 あなたのプレイヤー名</label>
+          <input type="text" id="my-name" placeholder="名前を入力" value="豪商プレイヤー">
+          
+          <label>🎨 あなたのアバターを選択</label>
+          <div class="avatar-picker" id="avatar-picker">
+            <div class="avatar-option selected" data-avatar="./assets/avatar_fox.jpg" onclick="selectAvatar(this)">
+              <img src="./assets/avatar_fox.jpg" alt="狐面の豪商">
+              <div class="avatar-label">狐面の豪商</div>
+            </div>
+            <div class="avatar-option" data-avatar="./assets/avatar_oiran.jpg" onclick="selectAvatar(this)">
+              <img src="./assets/avatar_oiran.jpg" alt="花魁">
+              <div class="avatar-label">華やか花魁</div>
+            </div>
+            <div class="avatar-option" data-avatar="./assets/avatar_dealer.jpg" onclick="selectAvatar(this)">
+              <img src="./assets/avatar_dealer.jpg" alt="ディーラー">
+              <div class="avatar-label">VIPディーラー</div>
+            </div>
+            <div class="avatar-option" data-avatar="./assets/avatar_gambler.jpg" onclick="selectAvatar(this)">
+              <img src="./assets/avatar_gambler.jpg" alt="賽師">
+              <div class="avatar-label">伝説の賽師</div>
+            </div>
+          </div>
+
+          <label>🔑 ルームID</label>
+          <input type="text" id="room-id-input" placeholder="例: vip777" value="vip777">
+          <div class="room-actions">
+            <button class="btn" onclick="joinRoom()">🚪 VIPルームに入る / 作る</button>
+          </div>
+          <div id="connection-status" class="status-msg">🔌 ルームを入力して「VIPルームに入る」を押してください</div>
+        </div>
+      </div>
+
+      <!-- ロビー画面 -->
+      <div id="lobby-screen" class="hidden">
+        <h1>🎲 オンラインチンチロ VIP</h1>
+        <div class="round-display">待機ロビー (<span id="display-room-id"></span>)</div>
+        <div class="setup-box">
+          <p style="font-size:0.68rem; color:#ffe57f;">👥 参加メンバー:</p>
+          <div id="lobby-players-list"></div>
+          <p style="font-size:0.55rem; color:#888; margin-top:1px;" id="host-indicator">👑 あなたはホストです</p>
+          <div id="debug-player-count" class="debug-info">参加者: 0人</div>
+        </div>
+        <button class="btn" id="start-game-btn" onclick="hostStartGame()">🎮 全員揃ったら対戦スタート！</button>
+      </div>
+
+      <!-- 対戦画面 -->
+      <div id="game-screen" class="hidden">
+        <h1>🎲 オンラインチンチロ VIP</h1>
+        <div class="round-display" id="round-display">第 1 ラウンド</div>
+
+        <div class="players-list" id="players-list"></div>
+
+        <div class="msg-area" id="msg-area">準備完了</div>
+
+        <div class="game-interactive-zone">
+          <div class="bowl-area">
+            <div class="hand-badge" id="hand-badge"></div>
+            <div class="bowl" id="bowl"></div>
+          </div>
+
+          <div class="action-panel">
+            <div id="bet-controls" class="hidden">
+              <label class="bet-label">🪙 賭け金を入力</label>
+              <div class="bet-input-row">
+                <input type="number" id="my-bet-input" value="1000" step="100" min="100" max="10000">
+                <button class="btn" onclick="submitBet()">💰 確定</button>
+              </div>
+            </div>
+
+            <button class="btn main-action-btn" id="action-btn" onclick="handleRollAction()" disabled>🎲 サイコロを振る</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ログパネル (右) -->
+    <div id="right-panel" class="side-panel">
+      <div class="panel-title">📊 勝負ログ</div>
+      <div class="log-container" id="log-container">
+        <div class="log-entry" style="color:#888;">ゲームログがここに表示されます</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // Supabase 初期化
+  // ============================================================
+  const SUPABASE_URL = 'https://vfuxwugeuvoqnumbhqfl.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_D5RVIOaCA5cl4CzwZajjKg_x01k-p9t';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ============================================================
+  // アバター選択
+  // ============================================================
+  let selectedAvatarUrl = './assets/avatar_fox.jpg';
+  function selectAvatar(el) {
+    document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedAvatarUrl = el.getAttribute('data-avatar');
+  }
+
+  // ============================================================
+  // Web Audio API 物理衝突衝突音 & 豪華SE
+  // ============================================================
+  let audioCtx = null;
+  const MASTER_VOLUME = 0.12;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playDiceHitSound(vol = 0.5, pitchRatio = 1.0) {
+    try {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const bufferSize = Math.floor(audioCtx.sampleRate * 0.025);
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime((1700 + Math.random() * 500) * pitchRatio, now);
+      filter.Q.setValueAtTime(5.5, now);
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(vol * MASTER_VOLUME * 1.8, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noise.start(now);
+
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime((780 + Math.random() * 250) * pitchRatio, now);
+      osc.frequency.exponentialRampToValueAtTime(260, now + 0.035);
+
+      oscGain.gain.setValueAtTime(vol * MASTER_VOLUME * 0.9, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+      osc.connect(oscGain);
+      oscGain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.035);
+    } catch (e) {}
+  }
+
+  function playRollSE() {
+    const hits = 9;
+    for (let i = 0; i < hits; i++) {
+      const delay = Math.pow(i / (hits - 1), 1.5) * 580;
+      const vol = 1.0 - (i / hits) * 0.55;
+      const pitch = 0.85 + Math.random() * 0.35;
+      setTimeout(() => { playDiceHitSound(vol, pitch); }, delay);
+    }
+  }
+
+  function playGoodSE() {
+    try {
+      initAudio();
+      const freqs = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+      freqs.forEach((f, i) => {
+        setTimeout(() => {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now);
+          gain.gain.setValueAtTime(0.35 * MASTER_VOLUME, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        }, i * 90);
+      });
+    } catch (e) {}
+  }
+
+  function playBadSE() {
+    try {
+      initAudio();
+      const freqs = [440, 415.30, 392.00, 349.23];
+      freqs.forEach((f, i) => {
+        setTimeout(() => {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now);
+          gain.gain.setValueAtTime(0.3 * MASTER_VOLUME, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        }, i * 130);
+      });
+    } catch (e) {}
+  }
+
+  function playShombenSE() {
+    try {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(350, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.4);
+      gain.gain.setValueAtTime(0.4 * MASTER_VOLUME, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (e) {}
+  }
+
+  // ============================================================
+  // 紙吹雪（Confetti）アニメーション
+  // ============================================================
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiParticles = [];
+  let confettiAnimationId = null;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function triggerConfetti() {
+    confettiParticles = [];
+    const colors = ['#ffd700', '#fff3a0', '#ff4757', '#ffffff', '#aa7c11'];
+    for (let i = 0; i < 90; i++) {
+      confettiParticles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.5 - canvas.height * 0.3,
+        size: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vy: Math.random() * 4 + 2,
+        vx: Math.random() * 2 - 1,
+        rotation: Math.random() * 360,
+        vRot: Math.random() * 6 - 3
+      });
+    }
+    if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+    animateConfetti();
+  }
+
+  function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    confettiParticles.forEach(p => {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rotation += p.vRot;
+      if (p.y < canvas.height) alive = true;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+    if (alive) {
+      confettiAnimationId = requestAnimationFrame(animateConfetti);
+    }
+  }
+
+  // ============================================================
+  // 豪華役カットイン表示処理
+  // ============================================================
+  function showCutin(player, hand) {
+    if (!hand || !['pinzoro', 'arashi', 'shigoro', 'hifumi', 'shomben'].includes(hand.type)) return;
+
+    const overlay = document.getElementById('cutin-overlay');
+    const avatarImg = document.getElementById('cutin-avatar');
+    const nameEl = document.getElementById('cutin-player-name');
+    const yakuEl = document.getElementById('cutin-yaku-name');
+    const multEl = document.getElementById('cutin-multiplier');
+
+    avatarImg.src = player.avatar || './assets/avatar_fox.jpg';
+    nameEl.textContent = player.name;
+
+    if (hand.type === 'pinzoro') {
+      yakuEl.textContent = '👑 ピンゾロ！';
+      multEl.textContent = '配当 5 倍大勝利！';
+      triggerConfetti();
+    } else if (hand.type === 'arashi') {
+      yakuEl.textContent = '🔥 アラシ！';
+      multEl.textContent = '配当 3 倍大勝利！';
+      triggerConfetti();
+    } else if (hand.type === 'shigoro') {
+      yakuEl.textContent = '✨ シゴロ！';
+      multEl.textContent = '配当 2 倍勝利！';
+      triggerConfetti();
+    } else if (hand.type === 'hifumi') {
+      yakuEl.textContent = '⚡ ヒフミ...';
+      multEl.textContent = '配当 2 倍支払い（大敗）';
+    } else if (hand.type === 'shomben') {
+      yakuEl.textContent = '🚽 ションベン！';
+      multEl.textContent = '即死敗北（1倍支払い）';
+    }
+
+    overlay.classList.add('active');
+    playGoodSE();
+
+    setTimeout(() => {
+      overlay.classList.remove('active');
+    }, 2200);
+  }
+
+  // ============================================================
+  // 役判定 ＆ ランク
+  // ============================================================
+  const RANK_MAP = {
+    'pinzoro': 1, 'arashi_6': 2.0, 'arashi_5': 2.1, 'arashi_4': 2.2, 'arashi_3': 2.3, 'arashi_2': 2.4,
+    'shigoro': 3, 'normal_6': 4, 'normal_5': 5, 'normal_4': 6, 'normal_3': 7, 'normal_2': 8, 'normal_1': 9,
+    'menashi': 10, 'hifumi': 11, 'shomben': 12
+  };
+
+  function getHandRank(hand) {
+    if (!hand) return 999;
+    if (hand.type === 'normal') return RANK_MAP[`normal_${hand.value}`] || 999;
+    if (hand.type === 'arashi') return RANK_MAP[`arashi_${hand.value}`] || 2.5;
+    return RANK_MAP[hand.type] || 999;
+  }
+
+  function judgeHand(dice) {
+    const sorted = [...dice].sort((a, b) => a - b);
+    const a = sorted[0], b = sorted[1], c = sorted[2];
+
+    if (a === 1 && b === 1 && c === 1) return { type: 'pinzoro', name: 'ピンゾロ', multiplier: 5, win: true, value: 1 };
+    if (a === b && b === c) return { type: 'arashi', name: 'アラシ', multiplier: 3, win: true, value: a };
+    if (a === 4 && b === 5 && c === 6) return { type: 'shigoro', name: 'シゴロ', multiplier: 2, win: true, value: 6 };
+    if (a === 1 && b === 2 && c === 3) return { type: 'hifumi', name: 'ヒフミ', multiplier: 2, win: false, value: 0 };
+    
+    if (a === b) return { type: 'normal', name: `${c}の目`, multiplier: 1, win: true, value: c };
+    if (b === c) return { type: 'normal', name: `${a}の目`, multiplier: 1, win: true, value: a };
+    if (a === c) return { type: 'normal', name: `${b}の目`, multiplier: 1, win: true, value: b };
+
+    let res = { type: 'menashi', name: '目なし', multiplier: 1, win: false, value: 0, canReroll: true };
+    if (Math.random() < 0.01) {
+      res = { type: 'shomben', name: 'ションベン', multiplier: 1, win: false, value: 0 };
+    }
+    return res;
+  }
+
+  function judgeResult(childHand, parentHand) {
+    const childRank = getHandRank(childHand);
+    const parentRank = getHandRank(parentHand);
+
+    if (childRank === parentRank) {
+      if (parentHand.win) return { winner: 'parent', message: `${childHand.name}同点！親優先！` };
+      return { winner: 'push', message: `${childHand.name}同点（引き分け）` };
+    }
+    return childRank < parentRank ? { winner: 'child' } : { winner: 'parent' };
+  }
+
+  // ============================================================
+  // ルールテーブルのミニサイコロ描画
+  // ============================================================
+  const diceMap = { 1:[4], 2:[2,6], 3:[2,4,6], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
+
+  function createMiniDie(v) {
+    const die = document.createElement('span');
+    die.className = 'mini-die';
+    const active = diceMap[v] || [];
+    for (let i = 0; i < 9; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      if (active.includes(i)) dot.classList.add('visible');
+      if (v === 1 && i === 4) dot.classList.add('red');
+      die.appendChild(dot);
+    }
+    return die;
+  }
+
+  function renderDiceCell() {
+    document.querySelectorAll('.dice-cell[data-dice]').forEach(el => {
+      const values = el.dataset.dice.split(',').map(Number);
+      const type = el.dataset.type || '';
+      const group = document.createElement('span');
+      group.className = 'dice-group';
+
+      if (type === 'range') {
+        values.slice(0, 3).forEach(v => group.appendChild(createMiniDie(v)));
+        const dash = document.createElement('span'); dash.className = 'dash'; dash.textContent = '〜';
+        group.appendChild(dash);
+        values.slice(3, 6).forEach(v => group.appendChild(createMiniDie(v)));
+      } else {
+        values.forEach(v => group.appendChild(createMiniDie(v)));
+      }
+      el.innerHTML = '';
+      el.appendChild(group);
+    });
+  }
+
+  // ============================================================
+  // ゲーム状態・同期データ
+  // ============================================================
+  function getOrCreatePersistentId() {
+    let saved = localStorage.getItem('chinchiro_my_id');
+    if (!saved) {
+      saved = 'p_' + Math.random().toString(36).substring(2, 7);
+      localStorage.setItem('chinchiro_my_id', saved);
+    }
+    return saved;
+  }
+
+  let myId = getOrCreatePersistentId();
+  let myName = '';
+  let currentRoomId = '';
+  let channel = null;
+  let isHost = false;
+
+  let roomPlayers = [];
+  let gameState = 'LOBBY';
+  let dealerIdx = 0;
+  let roundCount = 1;
+  let diceResult = [1, 1, 1];
+  let bettingReady = {};
+  let isProcessing = false;
+  let rollOrder = [];
+  let rollOrderIndex = 0;
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function addLog(msg) {
+    const container = document.getElementById('log-container');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `<span class="time">[${new Date().toLocaleTimeString()}]</span> ${escapeHtml(msg)}`;
+    container.prepend(entry);
+    while (container.children.length > 50) container.removeChild(container.lastChild);
+  }
+
+  function updateDiceUI(dice, isRolling = false) {
+    const bowl = document.getElementById('bowl');
+    if (!bowl) return;
+
+    bowl.innerHTML = dice.map((d, i) => {
+      let style = '';
+      if (isRolling) {
+        const rot = Math.floor(Math.random() * 360) - 180;
+        const tx = Math.floor(Math.random() * 24) - 12;
+        const ty = Math.floor(Math.random() * 24) - 12;
+        style = `transform: translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(0.95); transition: transform 0.05s ease-out;`;
+      } else {
+        const staticRot = (i - 1) * 16 + Math.floor(Math.random() * 10 - 5);
+        const tx = (i - 1) * 6;
+        const ty = (i === 1) ? -3 : 3;
+        style = `transform: translate(${tx}px, ${ty}px) rotate(${staticRot}deg); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);`;
+      }
+      return createDieHTML(d, style);
+    }).join('');
+  }
+
+  function createDieHTML(val, inlineStyle = '') {
+    const active = diceMap[val] || [];
+    let dots = '';
+    for (let i = 0; i < 9; i++) {
+      dots += `<div class="dot ${active.includes(i) ? 'visible' : ''} ${val === 1 && i === 4 ? 'red' : ''}"></div>`;
+    }
+    return `<div class="die-real" style="${inlineStyle}">${dots}</div>`;
+  }
+
+  function updateHandBadge(hand) {
+    const badge = document.getElementById('hand-badge');
+    if (!badge) return;
+    if (!hand) {
+      badge.classList.remove('show', 'shomben');
+      badge.textContent = '';
+      return;
+    }
+    if (hand.type === 'shomben') {
+      badge.textContent = '🚽 ションベン！';
+      badge.classList.add('show', 'shomben');
+    } else {
+      badge.classList.remove('show', 'shomben');
+      badge.textContent = '';
+    }
+  }
+
+  function randDice() { return Math.floor(Math.random() * 6) + 1; }
+
+  // ============================================================
+  // Presence 同期
+  // ============================================================
+  function updatePlayersFromPresence() {
+    if (!channel) return;
+    const state = channel.presenceState();
+    const newPlayers = [];
+    
+    for (const [key, presences] of Object.entries(state)) {
+      if (presences.length > 0) {
+        const p = presences[0];
+        newPlayers.push({
+          id: key,
+          name: p.name || '名無し',
+          avatar: p.avatar || './assets/avatar_fox.jpg',
+          money: p.money || 10000,
+          bet: p.bet || 1000,
+          hand: p.hand || null,
+          rollsLeft: p.rollsLeft !== undefined ? p.rollsLeft : 3,
+          isDone: p.isDone || false
+        });
+      }
+    }
+
+    if (!newPlayers.some(p => p.id === myId)) {
+      const existingMe = roomPlayers.find(p => p.id === myId);
+      newPlayers.push({
+        id: myId,
+        name: myName,
+        avatar: selectedAvatarUrl,
+        money: existingMe ? existingMe.money : 10000,
+        bet: existingMe ? existingMe.bet : 1000,
+        hand: existingMe ? existingMe.hand : null,
+        rollsLeft: existingMe ? existingMe.rollsLeft : 3,
+        isDone: existingMe ? existingMe.isDone : false
+      });
+    }
+    
+    const oldMap = {}; roomPlayers.forEach(p => { oldMap[p.id] = p; });
+    roomPlayers = newPlayers.map(p => oldMap[p.id] ? { ...p, money: oldMap[p.id].money, bet: oldMap[p.id].bet, hand: oldMap[p.id].hand, rollsLeft: oldMap[p.id].rollsLeft, isDone: oldMap[p.id].isDone } : p);
+
+    isHost = roomPlayers.length > 0 ? roomPlayers[0].id === myId : false;
+    updateHostIndicator();
+
+    if (gameState === 'LOBBY') updateLobbyUI();
+    else updateGameUI();
+  }
+
+  function joinRoom() {
+    initAudio();
+    myName = document.getElementById('my-name').value.trim() || '名無し';
+    currentRoomId = document.getElementById('room-id-input').value.trim() || 'vip777';
+
+    document.getElementById('connection-status').textContent = '⏳ VIPルームに接続中...';
+
+    if (channel) { try { channel.unsubscribe(); } catch(e) {} }
+
+    channel = supabaseClient.channel(`room_${currentRoomId}`, { config: { presence: { key: myId } } });
+
+    channel.on('presence', { event: 'sync' }, () => {
+      updatePlayersFromPresence();
+      document.getElementById('room-screen').classList.add('hidden');
+      document.getElementById('lobby-screen').classList.remove('hidden');
+      document.getElementById('display-room-id').innerText = currentRoomId;
+      document.getElementById('connection-status').textContent = '✅ VIP接続完了';
+      document.getElementById('leaveRoomBtn').style.display = 'inline-block';
+      if (isHost && gameState !== 'LOBBY') broadcastState();
+    });
+
+    channel.on('broadcast', { event: 'SYNC_STATE' }, (payload) => {
+      if (!isHost) {
+        const s = payload.payload;
+        if (s.roomPlayers) roomPlayers = s.roomPlayers;
+        if (s.gameState !== undefined) gameState = s.gameState;
+        if (s.dealerIdx !== undefined) dealerIdx = s.dealerIdx;
+        if (s.roundCount !== undefined) roundCount = s.roundCount;
+        if (s.diceResult) { diceResult = s.diceResult; updateDiceUI(diceResult); }
+        if (s.bettingReady) bettingReady = s.bettingReady;
+        if (s.rollOrder) rollOrder = s.rollOrder;
+        if (s.rollOrderIndex !== undefined) rollOrderIndex = s.rollOrderIndex;
+        updateGameUI();
+      }
+    });
+
+    channel.on('broadcast', { event: 'BET_PLACED' }, (payload) => {
+      const { playerId, bet } = payload.payload;
+      const p = roomPlayers.find(x => x.id === playerId);
+      if (p) {
+        p.bet = bet;
+        bettingReady[playerId] = true;
+        updateGameUI();
+      }
+    });
+
+    channel.on('broadcast', { event: 'DICE_RESULT' }, (payload) => {
+      const r = payload.payload;
+      const p = roomPlayers.find(x => x.id === r.playerId);
+      if (p) {
+        p.hand = r.hand;
+        p.rollsLeft = r.rollsLeft;
+        p.isDone = r.isDone;
+      }
+      updateHandBadge(r.hand);
+      updateGameUI();
+      addLog(`🎲 ${r.playerName} の結果: ${r.dice.join(', ')} → ${r.hand.name}`);
+      showCutin(r, r.hand);
+    });
+
+    channel.on('broadcast', { event: 'ROUND_RESULT' }, (payload) => {
+      if (!isHost) {
+        const { results, roundSummaryData } = payload.payload;
+        results.forEach(r => {
+          const p = roomPlayers.find(x => x.id === r.playerId);
+          if (p) { p.money = r.money; p.hand = r.hand; }
+        });
+        updateGameUI();
+        addResultLogTable(roundSummaryData);
+      }
+    });
+
+    channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await channel.track({
+          id: myId, name: myName, avatar: selectedAvatarUrl, money: 10000, bet: 1000, hand: null, rollsLeft: 3, isDone: false
+        });
+        addLog(`✅ VIPルームに参加しました (ID: ${myId})`);
+      }
+    });
+  }
+
+  function leaveRoom() {
+    if (channel) channel.unsubscribe();
+    document.getElementById('room-screen').classList.remove('hidden');
+    document.getElementById('lobby-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.add('hidden');
+    document.getElementById('leaveRoomBtn').style.display = 'none';
+  }
+  document.getElementById('leaveRoomBtn').addEventListener('click', leaveRoom);
+
+  function updateHostIndicator() {
+    const el = document.getElementById('host-indicator');
+    if (el) el.textContent = isHost ? '👑 あなたがホストです' : 'ホストではありません';
+    const startBtn = document.getElementById('start-game-btn');
+    if (startBtn) startBtn.style.display = isHost ? 'block' : 'none';
+  }
+
+  function broadcastState() {
+    if (!isHost || !channel) return;
+    channel.send({
+      type: 'broadcast', event: 'SYNC_STATE',
+      payload: { roomPlayers, gameState, dealerIdx, roundCount, diceResult, bettingReady, rollOrder, rollOrderIndex }
+    });
+  }
+
+  function updateLobbyUI() {
+    const list = document.getElementById('lobby-players-list');
+    list.innerHTML = roomPlayers.map(p =>
+      `<div style="display:flex; align-items:center; gap:6px; margin:3px 0;">
+        <img src="${p.avatar || './assets/avatar_fox.jpg'}" style="width:24px; height:24px; border-radius:50%; border:1px solid #ffd700;">
+        <span style="font-weight:bold; font-size:0.65rem;">${escapeHtml(p.name)} ${p.id === myId ? '(あなた)' : ''} ${p.id === roomPlayers[0]?.id ? '👑' : ''}</span>
+      </div>`
+    ).join('');
+    updateHostIndicator();
+  }
+
+  function getCurrentPlayer() {
+    if (!rollOrder || rollOrderIndex >= rollOrder.length) return null;
+    return roomPlayers.find(p => p.id === rollOrder[rollOrderIndex]) || null;
+  }
+
+  function updateGameUI() {
+    const listEl = document.getElementById('players-list');
+    listEl.innerHTML = '';
+
+    const currentTurnPlayer = getCurrentPlayer();
+
+    roomPlayers.forEach((p, idx) => {
+      const isDealer = idx === dealerIdx;
+      const isMe = p.id === myId;
+      const isCurrentTurn = currentTurnPlayer && currentTurnPlayer.id === p.id;
+      const isDone = p.isDone || false;
+
+      listEl.innerHTML += `
+        <div class="player-card ${isDealer ? 'dealer' : ''} ${isCurrentTurn && !isDone ? 'active' : ''} ${isMe ? 'me' : ''} ${isDone ? 'done' : ''}">
+          <img src="${p.avatar || './assets/avatar_fox.jpg'}" class="player-avatar" alt="Avatar">
+          <div class="player-info">
+            <strong>${escapeHtml(p.name)}</strong> ${isDealer ? '<span class="badge badge-dealer">親</span>' : ''} ${p.id === roomPlayers[0]?.id ? '<span class="badge badge-host">👑</span>' : ''}<br>
+            <small>出目: ${p.hand ? p.hand.name : '-'}</small>
+            ${!isDone && gameState === 'ROLLING' ? `<span class="roll-indicator">残り${p.rollsLeft}回</span>` : ''}
+          </div>
+          <div style="text-align:right;">
+            <div>${p.money.toLocaleString()} pt</div>
+            ${!isDealer ? `<small style="color:#ffe885;">賭け: ${p.bet.toLocaleString()} pt</small>` : ''}
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('round-display').textContent = `第 ${roundCount} ラウンド`;
+
+    const actionBtn = document.getElementById('action-btn');
+    const betControls = document.getElementById('bet-controls');
+    const msgArea = document.getElementById('msg-area');
+
+    const currentPlayer = getCurrentPlayer();
+    const isMyTurn = currentPlayer && currentPlayer.id === myId && !currentPlayer.isDone;
+    const isDealer = roomPlayers[dealerIdx]?.id === myId;
+    
+    const children = roomPlayers.filter((_, idx) => idx !== dealerIdx);
+    const allChildrenReady = children.length > 0 && children.every(p => bettingReady[p.id]);
+
+    if (gameState === 'BETTING') {
+      betControls.classList.add('hidden');
+      actionBtn.classList.remove('hidden');
+
+      if (isDealer) {
+        if (allChildrenReady) {
+          actionBtn.disabled = false;
+          actionBtn.textContent = '🚀 VIP対戦スタート！';
+          msgArea.textContent = '🎉 全員賭け金確定！対戦スタートを押してください';
+        } else {
+          actionBtn.disabled = true;
+          actionBtn.textContent = '⏳ 子の賭け金を待っています...';
+          msgArea.textContent = '⏳ 子の賭け金確定を待っています...';
+        }
+      } else {
+        actionBtn.classList.add('hidden');
+        if (!bettingReady[myId]) {
+          betControls.classList.remove('hidden');
+          msgArea.textContent = '🪙 賭け金を入力して「確定」を押してください';
+        } else {
+          msgArea.textContent = '✅ 賭け金を確定しました（親のスタートを待っています...）';
+        }
+      }
+    } else if (gameState === 'ROLLING') {
+      betControls.classList.add('hidden');
+      actionBtn.classList.remove('hidden');
+      if (isMyTurn && !isProcessing) {
+        actionBtn.disabled = false;
+        actionBtn.textContent = `🎲 サイコロを振る！（残り${currentPlayer.rollsLeft}回）`;
+        msgArea.textContent = '🎯 あなたのターンです！振ってください！';
+      } else {
+        actionBtn.disabled = true;
+        const name = currentPlayer ? currentPlayer.name : '不明';
+        actionBtn.textContent = `⏳ ${name} が振り中...`;
+        msgArea.textContent = `${name} のターンです`;
+      }
+    }
+  }
+
+  function hostStartGame() {
+    if (!isHost || roomPlayers.length < 2) {
+      alert('2人以上集まってからスタートしてください');
+      return;
+    }
+    roomPlayers.forEach(p => { p.money = 10000; p.hand = null; p.rollsLeft = 3; p.isDone = false; });
+    dealerIdx = 0; roundCount = 1; gameState = 'BETTING'; bettingReady = {};
+    roomPlayers.forEach(p => { bettingReady[p.id] = false; });
+    diceResult = [1, 1, 1]; updateDiceUI(diceResult);
+    broadcastState();
+    document.getElementById('lobby-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    updateGameUI();
+  }
+
+  function submitBet() {
+    const val = parseInt(document.getElementById('my-bet-input').value) || 1000;
+    const me = roomPlayers.find(p => p.id === myId);
+    if (!me) return;
+
+    me.bet = val;
+    bettingReady[myId] = true;
+    channel.send({ type: 'broadcast', event: 'BET_PLACED', payload: { playerId: myId, bet: val } });
+    document.getElementById('bet-controls').classList.add('hidden');
+    updateGameUI();
+  }
+
+  async function handleRollAction() {
+    if (gameState === 'BETTING') {
+      if (isHost) {
+        roomPlayers.forEach(p => { p.rollsLeft = 3; p.isDone = false; p.hand = null; });
+        gameState = 'ROLLING';
+        rollOrder = roomPlayers.filter((_, i) => i !== dealerIdx).map(p => p.id).concat(roomPlayers[dealerIdx].id);
+        rollOrderIndex = 0;
+        broadcastState();
+        updateGameUI();
+      }
+      return;
+    }
+
+    const currentPlayer = getCurrentPlayer();
+    if (!currentPlayer || currentPlayer.id !== myId || isProcessing) return;
+
+    isProcessing = true;
+    initAudio();
+    playRollSE();
+
+    const bowlEl = document.getElementById('bowl');
+    if (bowlEl) bowlEl.classList.add('rolling');
+
+    let count = 0;
+    const interval = setInterval(async () => {
+      const temp = [randDice(), randDice(), randDice()];
+      updateDiceUI(temp, true);
+      count++;
+      if (count > 12) {
+        clearInterval(interval);
+        if (bowlEl) bowlEl.classList.remove('rolling');
+        const finalDice = [randDice(), randDice(), randDice()].sort((a, b) => a - b);
+        diceResult = finalDice;
+        updateDiceUI(finalDice, false);
+
+        if (isHost) {
+          processRollResult(finalDice);
+        } else {
+          channel.send({ type: 'broadcast', event: 'DICE_ROLLED', payload: { playerId: myId, dice: finalDice } });
+        }
+      }
+    }, 60);
+  }
+
+  function processRollResult(dice) {
+    const currentPlayer = getCurrentPlayer();
+    if (!currentPlayer) return;
+
+    const hand = judgeHand(dice);
+    currentPlayer.hand = hand;
+
+    channel.send({
+      type: 'broadcast', event: 'DICE_RESULT',
+      payload: { playerId: currentPlayer.id, playerName: currentPlayer.name, dice: dice, hand: hand, rollsLeft: currentPlayer.rollsLeft, isDone: currentPlayer.isDone }
+    });
+
+    addLog(`🎲 ${currentPlayer.name} の出目: ${dice.join(', ')} → ${hand.name}`);
+    showCutin(currentPlayer, hand);
+
+    if (hand.type === 'menashi') {
+      currentPlayer.rollsLeft--;
+      if (currentPlayer.rollsLeft <= 0) currentPlayer.isDone = true;
+    } else {
+      currentPlayer.isDone = true;
+    }
+
+    isProcessing = false;
+    broadcastState();
+    updateGameUI();
+
+    if (currentPlayer.isDone) {
+      rollOrderIndex++;
+      if (rollOrderIndex >= rollOrder.length) finishRound();
+    }
+  }
+
+  function finishRound() {
+    if (!isHost) return;
+
+    const dealer = roomPlayers[dealerIdx];
+    const dealerHand = dealer.hand || { type: 'menashi', name: '目なし', multiplier: 1 };
+    const results = [];
+    const summary = { roundCount, dealer: { name: dealer.name, handName: dealerHand.name }, items: [] };
+
+    roomPlayers.forEach((p, idx) => {
+      if (idx === dealerIdx) return;
+      const childHand = p.hand || { type: 'menashi', name: '目なし', multiplier: 1 };
+      const res = judgeResult(childHand, dealerHand);
+
+      let transfer = p.bet * (childHand.multiplier || 1);
+      if (res.winner === 'child') {
+        p.money += transfer; dealer.money -= transfer;
+        summary.items.push({ playerName: p.name, dealerName: dealer.name, handName: childHand.name, resultType: 'win', transfer });
+      } else if (res.winner === 'parent') {
+        p.money -= transfer; dealer.money += transfer;
+        summary.items.push({ playerName: p.name, dealerName: dealer.name, handName: childHand.name, resultType: 'lose', transfer });
+      } else {
+        summary.items.push({ playerName: p.name, dealerName: dealer.name, handName: childHand.name, resultType: 'push', transfer: 0 });
+      }
+      results.push({ playerId: p.id, money: p.money, hand: childHand });
+    });
+
+    addResultLogTable(summary);
+    channel.send({ type: 'broadcast', event: 'ROUND_RESULT', payload: { results, roundSummaryData: summary } });
+
+    setTimeout(() => {
+      dealerIdx = (dealerIdx + 1) % roomPlayers.length;
+      roundCount++;
+      gameState = 'BETTING';
+      roomPlayers.forEach(p => { p.hand = null; p.rollsLeft = 3; p.isDone = false; });
+      bettingReady = {};
+      broadcastState();
+      updateGameUI();
+    }, 3000);
+  }
+
+  function addResultLogTable(summaryData) {
+    const container = document.getElementById('log-container');
+    if (!container) return;
+
+    const entry = document.createElement('div');
+    entry.className = 'log-entry log-result-entry';
+
+    let rowsHtml = summaryData.items.map(item => {
+      let badge = item.resultType === 'win' ? '🎉勝利' : (item.resultType === 'lose' ? '💸敗北' : '🤝引分');
+      let diffText = item.resultType === 'win' ? `<strong style="color:#2ed573;">+${item.transfer.toLocaleString()} pt</strong>` :
+                     (item.resultType === 'lose' ? `<strong style="color:#ff4757;">-${item.transfer.toLocaleString()} pt</strong>` : '±0 pt');
+      return `
+        <tr>
+          <td>${escapeHtml(item.playerName)}</td>
+          <td>${escapeHtml(item.handName)}</td>
+          <td><span class="log-badge ${item.resultType}">${badge}</span></td>
+          <td>${diffText}</td>
+        </tr>
+      `;
+    }).join('');
+
+    entry.innerHTML = `
+      <div class="log-result-title">🏆 第 ${summaryData.roundCount} ラウンド 結果発表</div>
+      <div class="log-result-dealer">👑 親 (${escapeHtml(summaryData.dealer.name)}): <strong>${escapeHtml(summaryData.dealer.handName)}</strong></div>
+      <table class="log-result-table">
+        <thead><tr><th>名前</th><th>役</th><th>結果</th><th>収支</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    `;
+    container.prepend(entry);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderDiceCell();
+  });
+</script>
+</body>
+</html>
