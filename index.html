@@ -66,8 +66,11 @@
       gap: 12px;
       width: 100%;
       max-width: 1440px;
-      min-height: 100vh;
+      height: calc(100vh - 16px);
+      max-height: calc(100vh - 16px);
       margin: 0 auto;
+      padding-bottom: 6px;
+      box-sizing: border-box;
       position: relative;
       z-index: 1;
     }
@@ -116,12 +119,13 @@
       border: 1px solid #ff5252;
     }
 
-    /* ========== 3カラム配置 (PC画面・中央メイン強調) ========== */
+    /* ========== 3カラム配置 (全枠高さ統一・PC画面マッチ) ========== */
     .columns {
       display: grid;
-      grid-template-columns: minmax(230px, 260px) minmax(560px, 1fr) minmax(240px, 270px);
+      grid-template-columns: minmax(260px, 300px) minmax(500px, 1fr) minmax(260px, 300px);
       gap: 16px;
       flex: 1;
+      min-height: 0;
       width: 100%;
       align-items: stretch;
     }
@@ -135,18 +139,18 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.85);
       display: flex;
       flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
     }
     #left-panel {
       grid-column: 1;
       order: 1;
-      overflow-y: auto;
-      max-height: calc(100vh - 100px);
+      overflow: hidden;
     }
     #right-panel {
       grid-column: 3;
       order: 3;
-      overflow-y: auto;
-      max-height: calc(100vh - 100px);
+      overflow: hidden;
     }
 
     /* 高級感のあるカスタムスクロールバー */
@@ -176,14 +180,17 @@
       backdrop-filter: blur(24px);
       border: 2px solid rgba(212, 175, 55, 0.6);
       border-radius: 20px;
-      padding: 18px 24px;
+      padding: 16px 20px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.2);
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 14px;
+      gap: 10px;
       min-width: 0;
+      height: 100%;
+      box-sizing: border-box;
+      overflow-y: auto;
       position: relative;
     }
 
@@ -194,7 +201,7 @@
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 900;
       letter-spacing: 2px;
       margin: 0;
@@ -202,12 +209,12 @@
     }
     .round-display {
       font-family: 'Cinzel', 'Outfit', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 900;
       color: #ffe57f;
       background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(0,0,0,0.6));
       border: 1.5px solid #ffd700;
-      padding: 4px 18px;
+      padding: 3px 16px;
       border-radius: 20px;
       display: inline-block;
       margin: 0 auto;
@@ -218,7 +225,7 @@
     /* ========== パネルタイトル ========== */
     .panel-title {
       font-family: 'Cinzel', 'Noto Serif JP', serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 900;
       letter-spacing: 1.5px;
       background: linear-gradient(135deg, #fff3a0 0%, #ffd700 50%, #aa7c11 100%);
@@ -226,28 +233,28 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       border-bottom: 2px dashed rgba(212,175,55,0.4);
-      padding-bottom: 6px;
-      margin-bottom: 10px;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
       text-align: center;
     }
     .rule-desc {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: #f0ece0;
-      margin-bottom: 10px;
-      line-height: 1.6;
+      margin-bottom: 8px;
+      line-height: 1.45;
       background: rgba(0, 0, 0, 0.5);
-      padding: 8px 10px;
+      padding: 6px 8px;
       border-radius: 8px;
       border-left: 3px solid #ffd700;
     }
     .yaku-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
     }
     .yaku-table th, .yaku-table td {
       border: 1px solid rgba(212,175,55,0.3);
-      padding: 5px 6px;
+      padding: 4px 5px;
       text-align: left;
       vertical-align: middle;
     }
@@ -671,10 +678,11 @@
     /* モバイル最適化 */
     @media (max-width: 900px) {
       body { padding: 6px; }
-      .main-container { max-width: 100%; gap: 8px; }
-      .columns { display: flex; flex-direction: column; gap: 10px; }
-      #left-panel, #right-panel { width: 100%; max-height: none; order: 2; }
-      .game-card { order: 1; width: 100%; padding: 14px 12px; gap: 10px; }
+      .main-container { max-width: 100%; height: auto; max-height: none; gap: 8px; }
+      .columns { display: flex; flex-direction: column; gap: 10px; flex: none; }
+      #left-panel { order: 2; grid-column: auto; width: 100%; height: auto; max-height: none; overflow: visible; }
+      #right-panel { order: 3; grid-column: auto; width: 100%; height: auto; max-height: none; overflow: visible; }
+      .game-card { order: 1; grid-column: auto; width: 100%; height: auto; padding: 14px 12px; gap: 10px; }
       .game-card h1 { font-size: 1.25rem; }
       .round-display { font-size: 0.72rem; padding: 3px 14px; }
       .players-list { grid-template-columns: 1fr; gap: 6px; }
